@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.xh.play.media.widget.VideoView
+            android:id="@+id/activity_play_vv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:video_type="android" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_gravity="bottom"
+            android:background="#50000000"
+            android:id="@+id/activity_play_ll"
+            android:layout_height="50dp">
+            <com.xh.play.widget.RecyclerView
+                android:layout_width="300dp"
+                app:direction="horizontal"
+                app:line="2dp"
+                app:lineColor="@color/color4"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/activity_play_rv"
+                />
+            <TextView
+                android:layout_marginRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:singleLine="true"
+                android:ellipsize="middle"
+                android:maxLength="10"
+                android:textSize="15sp"
+                android:textColor="#fff"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:id="@+id/activity_play_tv"/>
+        </FrameLayout>
+    </FrameLayout>
+
+</LinearLayout>
