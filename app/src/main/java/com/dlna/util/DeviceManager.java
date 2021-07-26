@@ -12,38 +12,42 @@ import com.dlna.listener.DeviceChangeListener;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeviceManager implements IDeviceManager {
     private static final String TAG = "DeviceManager";
     private Context context;
+    private List<IDeviceManager> deviceManagers = new ArrayList<>();
 
-    private IDeviceManager deviceManager;
 
     public DeviceManager(Context context) {
         this.context = context.getApplicationContext();
-        deviceManager = (IDeviceManager) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{IDeviceManager.class}, new InvocationHandler() {
-            IDeviceManager deviceManager = new ClingDeviceManagerImpl(DeviceManager.this.context);
-
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                return method.invoke(deviceManager, args);
-            }
-        });
+        deviceManagers.add(new ClingDeviceManagerImpl(context));
+        deviceManagers.add(new CybergarageDeviceManagerImpl(context));
     }
+
 
     @Override
     public void search(DeviceChangeListener listener) {
-        deviceManager.search(listener);
+        for (IDeviceManager deviceManager : deviceManagers)
+            deviceManager.search(listener);
     }
 
     @Override
     public void cancel() {
-        deviceManager.cancel();
+        for (IDeviceManager deviceManager : deviceManagers)
+            deviceManager.cancel();
     }
 
     @Override
     public IControl findDevice(String name) {
-        return deviceManager.findDevice(name);
+        for (IDeviceManager deviceManager : deviceManagers) {
+            IControl control = deviceManager.findDevice(name);
+            if (control != null)
+                return control;
+        }
+        return null;
     }
 
     public IPlayControl findPlayControl(String name) {

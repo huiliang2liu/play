@@ -1,20 +1,21 @@
 package com.xh.play.activitys;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,9 +28,9 @@ import com.xh.play.animation.AnimatorFactory;
 import com.xh.play.animation.ViewEmbellish;
 import com.xh.play.entities.Detial;
 import com.xh.play.entities.Tap;
+import com.xh.play.media.MediaListener;
 import com.xh.play.media.widget.VideoView;
 import com.xh.play.platforms.IPlatform;
-import com.xh.play.platforms.IPlatforms;
 import com.xh.play.thread.PoolManager;
 import com.xh.play.widget.RecyclerView;
 
@@ -52,11 +53,24 @@ public class PlayActivity extends Activity {
     FrameLayout frameLayout;
     @BindView(R.id.activity_play_tv)
     TextView textView;
+    @BindView(R.id.activity_play_state)
+    LinearLayout stateLL;
+    @BindView(R.id.activity_play_play_time)
+    TextView playTime;
+    @BindView(R.id.activity_play_duration_time)
+    TextView durationTime;
+    @BindView(R.id.activity_play_sb)
+    SeekBar playSb;
     TabAdapter tabAdapter;
     IPlatform platform;
     Detial detial;
     private int index = 0;
+    private long duration;
     private Detial.DetailPlayUrl playUrl;
+    private boolean show = true;
+    private float moveHeight = 300;
+    ViewEmbellish stateLLEmbllish;
+    ViewEmbellish rvEmbellish;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,18 +80,21 @@ public class PlayActivity extends Activity {
                 .LayoutParams.FLAG_HARDWARE_ACCELERATED);
         setContentView(R.layout.activity_play);
         ButterKnife.bind(this);
+        stateLLEmbllish = new ViewEmbellish(stateLL);
+        rvEmbellish = new ViewEmbellish(recyclerView);
         findViewById(R.id.activity_play_cling).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplication(),ClingActivity.class));
+                startActivity(new Intent(getApplication(), ClingActivity.class));
             }
         });
         playUrl = getIntent().getParcelableExtra(DETAIL_PLAY_URL);
         if (playUrl != null) {
             textView.setText(playUrl.title);
             videoView.play(playUrl.href);
-            hide();
-        }else{
+            stateLL.setVisibility(View.GONE);
+        } else {
+            stateLL.setVisibility(View.VISIBLE);
             detial = getIntent().getParcelableExtra(DETAIL);
             textView.setText(detial.name);
             platform = (IPlatform) getIntent().getSerializableExtra(PLATFORMS);
@@ -149,12 +166,70 @@ public class PlayActivity extends Activity {
             });
         }
 
-        videoView.setOnClickListener(new View.OnClickListener() {
+        videoView.setMediaListener(new MediaListener() {
             @Override
-            public void onClick(View v) {
-                if (recyclerView.getVisibility() == View.VISIBLE)
+            public void onCompletion() {
+            }
+
+            @Override
+            public void onError(int what, int extra) {
+
+            }
+
+            @Override
+            public void onPrepared() {
+
+            }
+
+            @Override
+            public boolean onInfo(int what, int extra) {
+                if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START && platform != null) {
+                    duration = videoView.getDuration();
+                    PoolManager.runUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            durationTime.setText(timeFormat(duration));
+                        }
+                    });
+                }
+                return false;
+            }
+
+            @Override
+            public void onBufferingUpdate(int percent) {
+                if (percent > playSb.getProgress())
+                    playSb.setSecondaryProgress(percent);
+                if (duration <= 0)
                     return;
-                show();
+                long position = videoView.getCurrentPosition();
+                int progress = (int) (position * 100 / duration);
+                playSb.setProgress(progress);
+                Log.e(TAG, "duration:" + duration + ",position:" + position + ",progress:" + progress);
+                playTime.setText(timeFormat(position));
+            }
+
+            @Override
+            public void onVideoSizeChanged(int width, int height) {
+
+            }
+        });
+        playSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                long playTime = seekBar.getProgress();
+                long seek = duration * playTime / 100;
+                Log.e(TAG, "playTime:" + playTime + ",seek:" + seek);
+                videoView.seekTo(seek);
             }
         });
     }
@@ -162,10 +237,10 @@ public class PlayActivity extends Activity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (!animatorStart && recyclerView.getVisibility() == View.VISIBLE) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN)
-                PoolManager.removeUi(hideRannable);
-            else if (event.getAction() == MotionEvent.ACTION_UP)
+        if (platform != null) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                show();
+            } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)
                 hide();
         }
         super.dispatchTouchEvent(event);
@@ -178,44 +253,87 @@ public class PlayActivity extends Activity {
         @Override
         public void run() {
             animatorStart = true;
-            ViewEmbellish embellish = new ViewEmbellish(frameLayout) {
+            show = false;
+            List<ObjectAnimator> objectAnimators = new ArrayList<>();
+            ObjectAnimator objectAnimator = AnimatorFactory.translationY(rvEmbellish, 300, 0, -moveHeight);
+            objectAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-//                        recyclerView.setVisibility(View.GONE);
+                public void onAnimationStart(Animator animation) {
+
                 }
 
                 @Override
-                public void onAnimationEnd(Animator animation, boolean isReverse) {
-                    super.onAnimationEnd(animation, isReverse);
-//                        recyclerView.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.INVISIBLE);
+                public void onAnimationEnd(Animator animation) {
                     animatorStart = false;
                 }
-            };
-            embellish.translationY(300, recyclerView.getHeight() * 2);
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            objectAnimators.add(objectAnimator);
+            if (platform != null)
+                objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, 0, moveHeight));
+            AnimatorFactory.startAnimation(objectAnimators);
         }
     };
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        videoView.destroy();
+    }
+
     private void show() {
+        if (show)
+            return;
         if (animatorStart)
             return;
         animatorStart = true;
-        recyclerView.setVisibility(View.VISIBLE);
-        recyclerView.setTranslationY(0);
-        ViewEmbellish embellish = new ViewEmbellish(frameLayout) {
+        show = true;
+        List<ObjectAnimator> objectAnimators = new ArrayList<>();
+        ObjectAnimator objectAnimator = AnimatorFactory.translationY(rvEmbellish, 300, -moveHeight, 0);
+        objectAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationEnd(Animator animation, boolean isReverse) {
-                super.onAnimationEnd(animation, isReverse);
-                animatorStart = false;
-                hide();
+            public void onAnimationStart(Animator animation) {
+
             }
-        };
-        embellish.translationY(300, recyclerView.getHeight() * 2, 0);
-        Log.e(TAG, "dadada");
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animatorStart = false;
+//                hide();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        objectAnimators.add(objectAnimator);
+        if (platform != null)
+            objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, moveHeight, 0));
+        AnimatorFactory.startAnimation(objectAnimators);
     }
 
     private void hide() {
+        PoolManager.removeUi(hideRannable);
         PoolManager.runUiThread(hideRannable, 3000);
     }
 
@@ -230,5 +348,26 @@ public class PlayActivity extends Activity {
 
     private class MyTap extends Tap {
         Detial.DetailPlayUrl url;
+    }
+
+    private String timeFormat(long time) {
+        long sec = time / 1000;
+        long min = sec / 60;
+        sec = sec % 60;
+        StringBuilder sb = new StringBuilder();
+        if (min > 9)
+            sb.append(min);
+        else if (min > 0)
+            sb.append("0").append(min);
+        else
+            sb.append("00");
+        sb.append(":");
+        if (sec > 9)
+            sb.append(sec);
+        else if (sec > 0)
+            sb.append("0").append(sec);
+        else
+            sb.append("00");
+        return sb.toString();
     }
 }

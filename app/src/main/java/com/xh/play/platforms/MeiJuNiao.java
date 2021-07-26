@@ -21,34 +21,105 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeiJuNiao implements IPlatforms {
+public class MeiJuNiao implements IPlatform {
     private static final String TAG = "MeiJuNiao";
     private static final String HOST = "http://www.meijuniao.com";
 
     @Override
-    public List<Title> main() {
-        //div[@class='nav-content bgray']/div[@class='nav-c-share']
+    public List<Title> types() {
+        String url = "http://www.meijuniao.com/";
         List<Title> titles = new ArrayList<>();
-        String url = "http://www.meijuniao.com/xijupian/";
         try {
-            Document document = Jsoup.connect(url).get();
-            JXDocument jx = JXDocument.create(document);
-            List<JXNode> nodes = jx.selN("//div[@class='nav-content bgray']/div[@class='nav-c-share']");
-            for (JXNode node : nodes) {
-                List<JXNode> as = node.sel("a");
-                for (int i = 1; i < as.size(); i++) {
-                    Element element = as.get(i).asElement();
-                    Title title = new Title();
-                    title.title = element.text();
-                    title.url = Util.dealWithUrl(element.attr("href"), url, HOST);
-                    titles.add(title);
-                }
+            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            List<JXNode> as = jx.selN("//div[@class='navgation-left']/a");
+            for (JXNode a : as) {
+                List<JXNode> texts = a.sel("em/text()");
+                if (texts.size() <= 0)
+                    continue;
+                String text = texts.get(0).asString();
+                if (text.equals("首页")||text.contains("新闻")||text.contains("明星"))
+                    continue;
+                String href = a.asElement().attr("href");
+                if (href == null || href.isEmpty())
+                    continue;
+                titles.add(new Title(text, Util.dealWithUrl(href, url, HOST)));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return titles;
     }
+
+    @Override
+    public List<Title> titles(String url) {
+        List<Title> titles = new ArrayList<>();
+        boolean dongman = url.contains("/meiju") || url.contains("/dianying");
+        dongman = !dongman;
+        try {
+            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            List<JXNode> dls;
+            if (dongman)
+                dls = jx.selN("//div[@class='all-type-box fn-clear']");
+            else
+                dls = jx.selN("//dl[@class='tv-order-by']");
+            //div[@class='all-type-box fn-clear']
+            for (JXNode dl : dls) {
+                List<JXNode> nodes;
+                if (dongman)
+                    nodes = dl.sel("span/text()");
+                else
+                    nodes = dl.sel("dt/span/text()");
+                if (nodes.size() <= 0)
+                    continue;
+                if (nodes.get(0).asString().equals("分类") || (dongman && nodes.get(0).asString().equals("类型："))) {
+                    if (dongman)
+                        nodes = dl.sel("div/a");
+                    else
+                        nodes = dl.sel("dd/p/a");
+                    for (JXNode node : nodes) {
+                        Element element = node.asElement();
+                        String text = element.text();
+                        if (dongman && text.equals("全部"))
+                            continue;
+                        String href = element.attr("href");
+                        if (href == null || href.isEmpty())
+                            continue;
+                        titles.add(new Title(text, Util.dealWithUrl(href, url, HOST)));
+                    }
+                    break;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return titles;
+    }
+
+//    @Override
+//    public List<Title> main() {
+//        //div[@class='nav-content bgray']/div[@class='nav-c-share']
+//        List<Title> titles = new ArrayList<>();
+//        String url = "http://www.meijuniao.com/xijupian/";
+//        try {
+//            Document document = Jsoup.connect(url).get();
+//            JXDocument jx = JXDocument.create(document);
+//            List<JXNode> nodes = jx.selN("//div[@class='nav-content bgray']/div[@class='nav-c-share']");
+//            for (JXNode node : nodes) {
+//                List<JXNode> as = node.sel("a");
+//                for (int i = 1; i < as.size(); i++) {
+//                    Element element = as.get(i).asElement();
+//                    Title title = new Title();
+//                    title.title = element.text();
+//                    title.url = Util.dealWithUrl(element.attr("href"), url, HOST);
+//                    titles.add(title);
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return titles;
+//    }
 
     @Override
     public ListMove list(String url) {

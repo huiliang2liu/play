@@ -26,7 +26,6 @@ import java.util.List;
 
 public class PlayApplication extends Application {
     public IImageLoad imageLoad;
-    public List<IPlatforms> platforms =new ArrayList<>();
     public List<IPlatform> platformList =new ArrayList<>();
     @Override
     protected void attachBaseContext(Context base) {
@@ -38,17 +37,17 @@ public class PlayApplication extends Application {
     public void onCreate() {
         super.onCreate();
         imageLoad = new IImageLoad.Builder().context(this).build();
-        platforms.add(new AiKanMeiJu());
-        platforms.add(new MeiJuWang());
-        platforms.add(new YingShiDaQuan());
-        platforms.add(new RenRen());
-        platforms.add(new MeiJuTianTang());
-        platforms.add(new MeiJuNiao());
-        platforms.add(new DianYingMao());
         platformList.add(new WaiJuWang());
         platformList.add(new DianYingWang());
         platformList.add(new UUMeiJu());
         platformList.add(new FKYingShi());
         platformList.add(new WuKongMeiJu());
+        platformList.add(new AiKanMeiJu());
+        platformList.add(new MeiJuWang());
+        platformList.add(new YingShiDaQuan());
+        platformList.add(new RenRen());
+        platformList.add(new MeiJuTianTang());
+        platformList.add(new MeiJuNiao());
+        platformList.add(new DianYingMao());
     }
 }

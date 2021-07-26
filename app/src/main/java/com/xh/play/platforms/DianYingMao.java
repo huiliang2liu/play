@@ -21,13 +21,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DianYingMao implements IPlatforms {
+public class DianYingMao implements IPlatform {
     private static final String HOTS = "https://www.mvcat.com";
     private static final String TAG = "DianYingMao";
 
     @Override
-    public List<Title> main() {
-        String url = "https://www.mvcat.com/";
+    public List<Title> types() {
+        List<Title> titles = new ArrayList<>();
+        titles.add(new Title("全部","https://www.mvcat.com/"));
+        return titles;
+    }
+
+    @Override
+    public List<Title> titles(String url) {
         List<Title> titles = new ArrayList<>();
         titles.add(new Title("动作", Util.dealWithUrl("//www.mvcat.com/movie/action/", url, HOTS)));
         titles.add(new Title("战争", Util.dealWithUrl("//www.mvcat.com/movie/war/", url, HOTS)));
@@ -45,6 +51,7 @@ public class DianYingMao implements IPlatforms {
         titles.add(new Title("cult", Util.dealWithUrl("//www.mvcat.com/movie/cult/", url, HOTS)));
         return titles;
     }
+
 
     @Override
     public ListMove list(String url) {

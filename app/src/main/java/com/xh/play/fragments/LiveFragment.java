@@ -21,6 +21,7 @@ import com.xh.play.entities.Live;
 import com.xh.play.entities.Tap;
 import com.xh.play.entities.Title;
 import com.xh.play.platforms.DianYingMao;
+import com.xh.play.platforms.IPlatform;
 import com.xh.play.platforms.IPlatforms;
 import com.xh.play.thread.PoolManager;
 import com.xh.play.widget.RecyclerView;
@@ -63,7 +64,7 @@ public class LiveFragment extends BaseFragment {
             }
         });
         PlayApplication application = (PlayApplication) getContext().getApplicationContext();
-        for (IPlatforms platforms : application.platforms)
+        for (IPlatform platforms : application.platformList)
             if (platforms instanceof DianYingMao) {
                 dianYingMao = (DianYingMao) platforms;
                 break;

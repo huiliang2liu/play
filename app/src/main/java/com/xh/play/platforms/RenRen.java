@@ -17,20 +17,16 @@ import org.seimicrawler.xpath.JXNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RenRen implements IPlatforms {
+public class RenRen implements IPlatform {
     private static final String HOST = "https://www.renren163.com";
     private static final String TAG = "RenRen";
 
-    public RenRen() {
-        super();
-    }
-
     @Override
-    public List<Title> main() {
+    public List<Title> types() {
         Log.e(TAG, "main");
         List<Title> titles = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(HOST).get();
+            Document document = Jsoup.connect("https://www.renren163.com/").get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> as = jx.selN("//ul[@class='myui-header__menu nav-menu']/li/a");
             for (JXNode a : as) {
@@ -41,7 +37,7 @@ public class RenRen implements IPlatforms {
                 String href = element.attr("href");
                 if (href == null || href.isEmpty())
                     continue;
-                href = Util.dealWithUrl(href, HOST + "/", HOST);
+                href = Util.dealWithUrl(href, "https://www.renren163.com/", HOST);
                 Title title1 = new Title();
                 title1.title = title;
                 title1.url = href;
@@ -53,6 +49,33 @@ public class RenRen implements IPlatforms {
         }
         return titles;
     }
+
+    @Override
+    public List<Title> titles(String url) {
+        List<Title> titles = new ArrayList<>();
+        try {
+            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            List<JXNode> nodes = jx.selN("//div[@class='slideDown-box']/ul");
+            if (nodes.size() > 0) {
+                nodes = nodes.get(0).sel("li/a");
+                for (JXNode node : nodes) {
+                    Element element = node.asElement();
+                    String text = element.text();
+                    if ("类型".equals(text) || "全部".equals(text))
+                        continue;
+                    String href = element.attr("href");
+                    if (href == null || href.isEmpty())
+                        continue;
+                    titles.add(new Title(text, Util.dealWithUrl(href, url, HOST)));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return titles;
+    }
+
+
 
     @Override
     public ListMove list(String url) {

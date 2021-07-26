@@ -18,30 +18,34 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeiJuWang implements IPlatforms {
+public class MeiJuWang implements IPlatform {
     private static final String TAG = "MeiJuWang";
     private static final String HOST = "https://91mjw.com";
 
-    public MeiJuWang() {
-        super();
+    @Override
+    public List<Title> types() {
+        List<Title> titles =new ArrayList<>();
+        titles.add(new Title("全部","https://91mjw.com/"));
+        return titles;
     }
 
     @Override
-    public List<Title> main() {
+    public List<Title> titles(String url) {
         List<Title> list = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(HOST).get();
+            Document document = Jsoup.connect(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> titles = jx.selN("//ul[@class='nav']/li/a");
             for (JXNode node : titles) {
                 Element element = node.asElement();
-                if (element.text().equals("首页"))
+                String text = element.text();
+                if (text.equals("首页")||text.equals("今日更新")||text.equals("排行榜")||text.equals("播出列表"))
                     continue;
                 Title title = new Title();
                 title.title = element.text();
                 if (element.attr("href") == null || element.attr("href").isEmpty())
                     continue;
-                title.url = Util.dealWithUrl(element.attr("href"), HOST + "/", HOST);
+                title.url = Util.dealWithUrl(element.attr("href"), url, HOST);
                 list.add(title);
             }
         } catch (IOException e) {
@@ -49,6 +53,7 @@ public class MeiJuWang implements IPlatforms {
         }
         return list;
     }
+
 
     @Override
     public ListMove list(String url) {

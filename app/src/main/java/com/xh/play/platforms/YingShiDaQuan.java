@@ -18,13 +18,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class YingShiDaQuan implements IPlatforms {
+public class YingShiDaQuan implements IPlatform {
     private static final String TAG = "YingShiDaQuan";
     private static final String HOST = "https://73m.cc";
 
-
     @Override
-    public List<Title> main() {
+    public List<Title> types() {
         List<Title> titles = new ArrayList<>();
         {
             Title title = new Title();
@@ -52,6 +51,32 @@ public class YingShiDaQuan implements IPlatforms {
         }
         return titles;
     }
+
+    @Override
+    public List<Title> titles(String url) {
+        List<Title> titles = new ArrayList<>();
+        try {
+            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            List<JXNode> nodes = jx.selN("//div[@class='slideDown-box']/ul");
+            if (nodes.size() > 0) {
+                nodes = nodes.get(0).sel("li/a");
+                for (JXNode node : nodes) {
+                    Element element = node.asElement();
+                    String text = element.text();
+                    if ("类型".equals(text) || "全部".equals(text))
+                        continue;
+                    String href = element.attr("href");
+                    if (href == null || href.isEmpty())
+                        continue;
+                    titles.add(new Title(text, Util.dealWithUrl(href, url, HOST)));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return titles;
+    }
+
 
     @Override
     public ListMove list(String url) {

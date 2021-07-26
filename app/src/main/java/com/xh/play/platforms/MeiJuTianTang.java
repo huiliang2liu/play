@@ -20,16 +20,12 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeiJuTianTang implements IPlatforms {
+public class MeiJuTianTang implements IPlatform {
     private static final String HOST = "https://www.meijutt.tv";
     private static final String TAG = "MeiJuTianTang";
 
-    public MeiJuTianTang() {
-        super();
-    }
-
     @Override
-    public List<Title> main() {
+    public List<Title> types() {
         List<Title> titles = new ArrayList<>();
         try {
             Document document = Jsoup.connect(HOST).get();
@@ -53,6 +49,30 @@ public class MeiJuTianTang implements IPlatforms {
         }
         return titles;
     }
+
+    @Override
+    public List<Title> titles(String url) {
+        //li[@id='drama']/div/a
+        List<Title> titles = new ArrayList<>();
+        try {
+            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            List<JXNode> nodes = jx.selN("//li[@id='drama']/div/a");
+            for (JXNode node : nodes) {
+                Element element = node.asElement();
+                String text = element.text();
+                if (text.equals("全部"))
+                    continue;
+                String href = element.attr("href");
+                if (href == null || href.isEmpty())
+                    continue;
+                titles.add(new Title(text, Util.dealWithUrl(href, url, HOST)));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return titles;
+    }
+
 
     @Override
     public ListMove list(String url) {

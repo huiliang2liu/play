@@ -11,6 +11,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.Transformation;
 import com.bumptech.glide.load.engine.Resource;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
@@ -65,35 +67,13 @@ public class GlideImpl extends AImageLoad {
     }
 
     private void load(int defaultImg, int error, String path, ITransform transform, ViewTarget target) {
-        RequestOptions options = new RequestOptions().error(error).placeholder(defaultImg).transform(new Transformation<Bitmap>() {
+        RequestOptions options = new RequestOptions().error(error).placeholder(defaultImg).transform(new BitmapTransformation() {
             @NonNull
+
             @Override
-            public Resource<Bitmap> transform(@NonNull Context context, @NonNull Resource<Bitmap> resource, int outWidth, int outHeight) {
-                return new Resource<Bitmap>() {
-                    @NonNull
-                    @Override
-                    public Class<Bitmap> getResourceClass() {
-                        return resource.getResourceClass();
-                    }
-
-                    @NonNull
-                    @Override
-                    public Bitmap get() {
-                        if (transform != null)
-                            return transform.transform(resource.get());
-                        return resource.get();
-                    }
-
-                    @Override
-                    public int getSize() {
-                        return resource.getSize();
-                    }
-
-                    @Override
-                    public void recycle() {
-                        resource.recycle();
-                    }
-                };
+            protected Bitmap transform(
+                    @NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+                return transform!=null?transform.transform(toTransform):toTransform;
             }
 
             @Override

@@ -50,9 +50,9 @@ public interface IImageLoad {
 
                 {
                     try {
-                        Class.forName("com.nostra13.universalimageloader.core.ImageLoader");
-                        imageLoad = new ImageloadImpl(config, context, null);
-                        Log.e(TAG, "ImageLoader");
+                        Class.forName("com.bumptech.glide.Glide");
+                        imageLoad = new GlideImpl(config, context,"");
+                        Log.e(TAG, "Glide");
                     } catch (ClassNotFoundException e) {
                         try {
                             Class.forName("com.squareup.picasso.Picasso");
@@ -60,9 +60,9 @@ public interface IImageLoad {
                             Log.e(TAG, "Picasso");
                         } catch (ClassNotFoundException e1) {
                             try {
-                                Class.forName("com.bumptech.glide.Glide");
-                                imageLoad = new PicassoImpl(config, context);
-                                Log.e(TAG, "Glide");
+                                Class.forName("com.nostra13.universalimageloader.core.ImageLoader");
+                                imageLoad = new ImageloadImpl(config, context, null);
+                                Log.e(TAG, "ImageLoader");
                             } catch (ClassNotFoundException e2) {
                                 e2.printStackTrace();
                             }

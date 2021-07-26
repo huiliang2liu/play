@@ -217,6 +217,13 @@ public class VideoView extends SurfaceView implements SurfaceHolder.Callback, Me
             Log.d(TAG, "本地文件或网络相关错误");
         } else if (extra == MediaPlayer.MEDIA_ERROR_MALFORMED) {
             Log.d(TAG, "比特流不符合相关的编码标准和文件规范");
+            Log.d(TAG, "重新播放");
+            String path = this.path;
+            this.path = "";
+            long p = mMediaPlayer.getCurrentPosition();
+            setPath(path);
+            playTime = p;
+            return;
         } else if (extra == MediaPlayer.MEDIA_ERROR_UNSUPPORTED) {
             Log.d(TAG, "框架不支持该功能");
         } else if (extra == MediaPlayer.MEDIA_ERROR_TIMED_OUT) {
@@ -262,6 +269,13 @@ public class VideoView extends SurfaceView implements SurfaceHolder.Callback, Me
 //            String path = this.path;
 //            this.path = "";
 //            setPath(path);
+            Log.d(TAG, "比特流不符合相关的编码标准和文件规范");
+            Log.d(TAG, "重新播放");
+            String path = this.path;
+            this.path = "";
+            long p = mMediaPlayer.getCurrentPosition();
+            setPath(path);
+            playTime = p;
         } else if (what == MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT)
             Log.d(TAG, "onInfo：读取字幕使用时间过");
         else if (what == MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE)
@@ -296,5 +310,22 @@ public class VideoView extends SurfaceView implements SurfaceHolder.Callback, Me
     @Override
     public void onVideoSizeChanged(int width, int height) {
         Log.d(TAG, String.format("onVideoSizeChanged,width:%d,height:%d", width, height));
+    }
+
+    public void seekTo(long seek) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.seekTo(seek);
+    }
+
+    public long getDuration() {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.getDuration();
+        return 0;
+    }
+
+    public long getCurrentPosition() {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.getCurrentPosition();
+        return 0;
     }
 }

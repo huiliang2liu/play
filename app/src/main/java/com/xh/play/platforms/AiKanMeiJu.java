@@ -20,15 +20,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AiKanMeiJu implements IPlatforms {
+public class AiKanMeiJu implements IPlatform {
     private static final String TAG = "AiKanMeiJu";
     private static final String HOST = "https://www.akmeiju.com";
 
     @Override
-    public List<Title> main() {
+    public List<Title> types() {
+        List<Title> titles =new ArrayList<>();
+        titles.add(new Title("全部","https://www.akmeiju.com/"));
+        return titles;
+    }
+
+    @Override
+    public List<Title> titles(String url) {
         List<Title> titles = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(HOST).get();
+            Document document = Jsoup.connect(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//div[@class='row']/div/ul/li/a");
             for (JXNode node : nodes) {
@@ -37,7 +44,7 @@ public class AiKanMeiJu implements IPlatforms {
                 if (text.indexOf("/") < 0)
                     continue;
                 String href = elementt.attr("href");
-                href = Util.dealWithUrl(href, HOST, HOST);
+                href = Util.dealWithUrl(href, url, HOST);
                 Title title = new Title();
                 title.title = text;
                 title.url = href;

@@ -1,21 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <com.xh.play.media.widget.VideoView
             android:id="@+id/activity_play_vv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:video_type="android" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#50000000"
+        android:layout_gravity="bottom"
+        android:id="@+id/activity_play_state"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="30dp"
+            android:textSize="15sp"
+            android:text="00:00"
+            android:id="@+id/activity_play_play_time"
+            android:textColor="#90ffffff"/>
+
+        <SeekBar
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:maxHeight="2dp"
+            android:layout_gravity="center"
+            android:max="100"
+            android:thumb="@drawable/seek_bar_thumb"
+            android:progressDrawable="@drawable/seek_bar_bg"
+            android:id="@+id/activity_play_sb"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_gravity="right"
+            android:textSize="15sp"
+            android:text="00:00"
+            android:id="@+id/activity_play_duration_time"
+            android:textColor="#90ffffff"
+            />
+    </LinearLayout>
+
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_gravity="bottom"
             android:background="#50000000"
             android:id="@+id/activity_play_ll"
             android:layout_height="50dp">
@@ -43,10 +80,12 @@
                 android:paddingRight="10dp"
                 android:id="@+id/activity_play_tv"/>
             <TextView
+                android:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
+                android:gravity="center"
                 android:text="点击投屏"
                 android:textSize="15sp"
                 android:textColor="#fff"
@@ -54,6 +93,5 @@
                 android:layout_marginRight="10dp"
                 android:id="@+id/activity_play_cling"/>
         </FrameLayout>
-    </FrameLayout>
 
-</LinearLayout>
+</FrameLayout>
