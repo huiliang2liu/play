@@ -52,6 +52,8 @@ public class ClingDeviceManagerImpl implements IDeviceManager, RegistryListener,
 
     @Override
     public IControl findDevice(String name) {
+        if (upnpService == null)
+            return null;
         Collection<Device> devices = upnpService.getRegistry().getDevices(DMR_DEVICE_TYPE);
         if (devices == null || devices.size() <= 0)
             return null;

@@ -87,7 +87,9 @@ public class PlayActivity extends Activity {
         findViewById(R.id.activity_play_cling).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplication(), ClingActivity.class));
+                Intent intent = new Intent(getApplication(), ClingActivity.class);
+                intent.putExtra(ClingActivity.PLAY_URL,videoView.getPath());
+                startActivity(intent);
             }
         });
         playUrl = getIntent().getParcelableExtra(DETAIL_PLAY_URL);

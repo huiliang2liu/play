@@ -166,6 +166,10 @@ public class VideoView extends SurfaceView implements SurfaceHolder.Callback, Me
         isPlay = true;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public synchronized void pause() {
         isPlay = false;
         mMediaPlayer.pause();
