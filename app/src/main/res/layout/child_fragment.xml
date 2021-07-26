@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/child_fragment_srl"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
     <com.xh.play.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:direction="gridVertical"
-        app:count="4"
+        app:line="1dp"
         app:lineColor="@color/color1"
-        app:lineWidth="2dp"
-        app:lineHeight="2dp"
-        android:id="@+id/child_fragment_rv"/>
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+        app:direction="horizontal"
+        android:id="@+id/child_fragment_tab"
+        android:layout_height="50dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color1"/>
+    <com.xh.play.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:scroll="false"
+        android:id="@+id/child_fragment_vp"/>
+<!--    <com.scwang.smartrefresh.layout.SmartRefreshLayout-->
+<!--        android:id="@+id/child_fragment_srl"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+<!--    <com.xh.play.widget.RecyclerView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:direction="gridVertical"-->
+<!--        app:count="4"-->
+<!--        app:lineColor="@color/color1"-->
+<!--        app:lineWidth="2dp"-->
+<!--        app:lineHeight="2dp"-->
+<!--        android:id="@+id/child_fragment_rv"/>-->
+<!--    </com.scwang.smartrefresh.layout.SmartRefreshLayout>-->
 
-</FrameLayout>
+</LinearLayout>

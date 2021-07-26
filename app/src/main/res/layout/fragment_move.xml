@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent">
+    <com.xh.play.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:line="1dp"
+        app:lineColor="@color/color1"
+        app:direction="gridVertical"
+        app:count="4"
+        android:id="@+id/fragment_move_rv"
+        />
+
+</LinearLayout>

@@ -33,10 +33,47 @@ public class AkmjFragment extends BaseFragment implements RecyclerViewAdapter.On
     IPlatforms platforms;
     TabAdapter tabAdapter;
     int tab = 0;
+    boolean loading = false;
+    Runnable load = new Runnable() {
+        @Override
+        public void run() {
+            final List<Title> titles = platforms.main();
+            PoolManager.runUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    List<Fragment> entities = new ArrayList<>(titles.size());
+                    for (int i = 0; i < titles.size(); i++) {
+                        Title title = titles.get(i);
+                        Tap tap = new Tap();
+                        tap.select = i == tab;
+                        tap.title = title.title;
+                        tabAdapter.addItem(tap);
+                        ChildFragment fragment = new ChildFragment();
+                        fragment.setUrl(title.url);
+                        fragment.setPlatforms(platforms);
+                        entities.add(fragment);
+                    }
+                    fragmentAdapter = new FragmentAdapter(AkmjFragment.this, entities);
+                    liveVp.setAdapter(fragmentAdapter);
+                    loading = false;
+                }
+            });
+        }
+    };
 
     public AkmjFragment setPlatforms(IPlatforms platforms) {
         this.platforms = platforms;
         return this;
+    }
+
+
+    @Override
+    protected void visible() {
+        super.visible();
+        if (tabAdapter.getCount() <= 0 && !loading) {
+            loading = true;
+            PoolManager.io(load);
+        }
     }
 
     @Override
@@ -45,31 +82,6 @@ public class AkmjFragment extends BaseFragment implements RecyclerViewAdapter.On
         ButterKnife.bind(this, view);
         tabAdapter = new TabAdapter(liveTab);
         tabAdapter.setOnItemClickListener(this);
-        PoolManager.io(new Runnable() {
-            @Override
-            public void run() {
-                final List<Title> titles = platforms.main();
-                PoolManager.runUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<Fragment> entities = new ArrayList<>(titles.size());
-                        for (int i = 0; i < titles.size(); i++) {
-                            Title title = titles.get(i);
-                            Tap tap = new Tap();
-                            tap.select = i == tab;
-                            tap.title = title.title;
-                            tabAdapter.addItem(tap);
-                            ChildFragment fragment = new ChildFragment();
-                            fragment.setUrl(title.url);
-                            fragment.setPlatforms(platforms);
-                            entities.add(fragment);
-                        }
-                        fragmentAdapter = new FragmentAdapter(AkmjFragment.this, entities);
-                        liveVp.setAdapter(fragmentAdapter);
-                    }
-                });
-            }
-        });
     }
 
     @Override

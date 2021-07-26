@@ -11,6 +11,26 @@
         android:layout_gravity="bottom"
         android:id="@+id/activity_main_ll"
         android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="直播"
+            android:background="#f00"
+            android:textColor="#fff"
+            android:gravity="center"
+            android:id="@+id/activity_main_live"
+            android:textSize="20sp"/>
+        <TextView
+            android:textColor="#000"
+            android:background="#fff"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="点播"
+            android:gravity="center"
+            android:id="@+id/activity_main_move"
+            android:textSize="20sp"/>
     </LinearLayout>
 
     <View

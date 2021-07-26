@@ -4,12 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -26,6 +28,7 @@ import com.xh.play.animation.ViewEmbellish;
 import com.xh.play.entities.Detial;
 import com.xh.play.entities.Tap;
 import com.xh.play.media.widget.VideoView;
+import com.xh.play.platforms.IPlatform;
 import com.xh.play.platforms.IPlatforms;
 import com.xh.play.thread.PoolManager;
 import com.xh.play.widget.RecyclerView;
@@ -50,7 +53,7 @@ public class PlayActivity extends Activity {
     @BindView(R.id.activity_play_tv)
     TextView textView;
     TabAdapter tabAdapter;
-    IPlatforms platforms;
+    IPlatform platform;
     Detial detial;
     private int index = 0;
     private Detial.DetailPlayUrl playUrl;
@@ -63,6 +66,12 @@ public class PlayActivity extends Activity {
                 .LayoutParams.FLAG_HARDWARE_ACCELERATED);
         setContentView(R.layout.activity_play);
         ButterKnife.bind(this);
+        findViewById(R.id.activity_play_cling).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplication(),ClingActivity.class));
+            }
+        });
         playUrl = getIntent().getParcelableExtra(DETAIL_PLAY_URL);
         if (playUrl != null) {
             textView.setText(playUrl.title);
@@ -71,7 +80,7 @@ public class PlayActivity extends Activity {
         }else{
             detial = getIntent().getParcelableExtra(DETAIL);
             textView.setText(detial.name);
-            platforms = (IPlatforms) getIntent().getSerializableExtra(PLATFORMS);
+            platform = (IPlatform) getIntent().getSerializableExtra(PLATFORMS);
             tabAdapter = new TabAdapter(recyclerView);
             tabAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
                 @Override
@@ -86,7 +95,7 @@ public class PlayActivity extends Activity {
                     PoolManager.io(new Runnable() {
                         @Override
                         public void run() {
-                            final String url = platforms.play(((MyTap) tabAdapter.getItem(position)).url);
+                            final String url = platform.play(((MyTap) tabAdapter.getItem(position)).url);
                             if (url == null || url.isEmpty()) {
                                 Log.e(TAG, "play error");
                                 Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
@@ -105,7 +114,7 @@ public class PlayActivity extends Activity {
             PoolManager.io(new Runnable() {
                 @Override
                 public void run() {
-                    if (platforms.playDetail(detial)) {
+                    if (platform.playDetail(detial)) {
                         if (detial.playUrls.size() < 0) {
                             Log.e(TAG, "no url");
                             Toast.makeText(getApplication(), "没有播放地址", Toast.LENGTH_SHORT).show();
@@ -119,7 +128,7 @@ public class PlayActivity extends Activity {
                             myTap.select = i == index;
                             taps.add(myTap);
                         }
-                        final String url = platforms.play(detial.playUrls.get(0));
+                        final String url = platform.play(detial.playUrls.get(0));
                         if (url == null || url.isEmpty()) {
                             Log.e(TAG, "play error");
                             Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
@@ -149,6 +158,7 @@ public class PlayActivity extends Activity {
             }
         });
     }
+
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {

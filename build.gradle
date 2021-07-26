@@ -4,9 +4,13 @@ buildscript {
         google()
         jcenter()
         mavenCentral()
+        maven {
+            url 'http://4thline.org/m2'
+            name 'cling'
+        }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.1"
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.3'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -19,6 +23,10 @@ allprojects {
         mavenCentral()
         google()
         jcenter()
+        maven {
+            url 'http://4thline.org/m2'
+            name 'cling'
+        }
     }
 }
 

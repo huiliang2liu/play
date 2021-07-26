@@ -11,6 +11,8 @@ public class Util {
     private final static String CHARSET = "utf-8";
 
     public static String dealWithUrl(String url, String baseUlr, String host) {
+        if(url==null||url.isEmpty())
+            return url;
         if (url.startsWith("http:") | url.startsWith("https:"))
             return url;
         if (url.startsWith("//"))

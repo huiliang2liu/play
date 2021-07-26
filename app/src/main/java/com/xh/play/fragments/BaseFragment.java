@@ -23,7 +23,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imageLoad=((PlayApplication)getContext().getApplicationContext()).imageLoad;
+        imageLoad = ((PlayApplication) getContext().getApplicationContext()).imageLoad;
     }
 
     @Nullable
@@ -32,9 +32,12 @@ public abstract class BaseFragment extends Fragment {
         if (view == null) {
             view = inflater.inflate(layout(), null);
             bindView();
+            if (visible)
+                visible();
         }
         return view;
     }
+
 
     public void bindView() {
 
@@ -52,7 +55,7 @@ public abstract class BaseFragment extends Fragment {
                 inVisible();
             visible = false;
         } else {
-            if (!visible)
+            if (!visible && view != null)
                 visible();
             visible = true;
         }
@@ -62,7 +65,7 @@ public abstract class BaseFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            if (!visible)
+            if (!visible && view != null)
                 visible();
             visible = true;
         } else {

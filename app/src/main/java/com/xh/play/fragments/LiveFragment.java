@@ -32,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class HomeFragment extends BaseFragment {
+public class LiveFragment extends BaseFragment {
     private static final String TAG = "HomeFragment";
     @BindView(R.id.fragment_home_rv)
     RecyclerView recyclerView;
