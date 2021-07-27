@@ -21,7 +21,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeiJuNiao implements IPlatform {
+public class MeiJuNiao extends AbsPlatform {
     private static final String TAG = "MeiJuNiao";
     private static final String HOST = "http://www.meijuniao.com";
 
@@ -30,7 +30,7 @@ public class MeiJuNiao implements IPlatform {
         String url = "http://www.meijuniao.com/";
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> as = jx.selN("//div[@class='navgation-left']/a");
             for (JXNode a : as) {
                 List<JXNode> texts = a.sel("em/text()");
@@ -56,7 +56,7 @@ public class MeiJuNiao implements IPlatform {
         boolean dongman = url.contains("/meiju") || url.contains("/dianying");
         dongman = !dongman;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> dls;
             if (dongman)
                 dls = jx.selN("//div[@class='all-type-box fn-clear']");
@@ -102,7 +102,7 @@ public class MeiJuNiao implements IPlatform {
 //        List<Title> titles = new ArrayList<>();
 //        String url = "http://www.meijuniao.com/xijupian/";
 //        try {
-//            Document document = Jsoup.connect(url).get();
+//            Document document = createConnection(url).get();
 //            JXDocument jx = JXDocument.create(document);
 //            List<JXNode> nodes = jx.selN("//div[@class='nav-content bgray']/div[@class='nav-c-share']");
 //            for (JXNode node : nodes) {
@@ -127,7 +127,7 @@ public class MeiJuNiao implements IPlatform {
         List<Detial> detials = new ArrayList<>();
         move.detials = detials;
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> lis = jx.selN("//ul[@id='contents']/li");
             for (JXNode node : lis) {
@@ -171,7 +171,7 @@ public class MeiJuNiao implements IPlatform {
     @Override
     public boolean playDetail(Detial detial) {
         try {
-            Document document = Jsoup.connect(detial.detialUrl).get();
+            Document document = createConnection(detial.detialUrl).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//p[@class='fd-list']");
             String type = "";
@@ -241,7 +241,7 @@ public class MeiJuNiao implements IPlatform {
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
         try {
-            Document document = Jsoup.connect(playUrl.href).get();
+            Document document = createConnection(playUrl.href).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//div[@id='zanpiancms_player']/script/text()");
             if (nodes.size() > 0) {

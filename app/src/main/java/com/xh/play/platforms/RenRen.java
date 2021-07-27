@@ -17,7 +17,7 @@ import org.seimicrawler.xpath.JXNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RenRen implements IPlatform {
+public class RenRen extends AbsPlatform {
     private static final String HOST = "https://www.renren163.com";
     private static final String TAG = "RenRen";
 
@@ -26,7 +26,7 @@ public class RenRen implements IPlatform {
         Log.e(TAG, "main");
         List<Title> titles = new ArrayList<>();
         try {
-            Document document = Jsoup.connect("https://www.renren163.com/").get();
+            Document document = createConnection("https://www.renren163.com/").get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> as = jx.selN("//ul[@class='myui-header__menu nav-menu']/li/a");
             for (JXNode a : as) {
@@ -54,7 +54,7 @@ public class RenRen implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> nodes = jx.selN("//div[@class='slideDown-box']/ul");
             if (nodes.size() > 0) {
                 nodes = nodes.get(0).sel("li/a");
@@ -84,7 +84,7 @@ public class RenRen implements IPlatform {
         List<Detial> detials = new ArrayList<>();
         listMove.detials = detials;
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//div[@class='myui-panel_bd']/ul[@class='myui-vodlist clearfix']/li/div");
             for (JXNode node : nodes) {
@@ -146,7 +146,7 @@ public class RenRen implements IPlatform {
         Log.e(TAG, "playDetail");
         Log.e(TAG, detial.detialUrl);
         try {
-            Document document = Jsoup.connect(detial.detialUrl).get();
+            Document document = createConnection(detial.detialUrl).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> details = jx.selN("//div[@class='myui-content__detail']");
             String type = "";
@@ -216,7 +216,7 @@ public class RenRen implements IPlatform {
         Log.e(TAG, "play");
         Log.e(TAG, playUrl.href);
         try {
-            Document document = Jsoup.connect(playUrl.href).get();
+            Document document = createConnection(playUrl.href).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> ress = jx.selN("//div[@class='myui-player__video embed-responsive clearfix']/script/text()");
             for (JXNode node : ress) {
@@ -243,7 +243,7 @@ public class RenRen implements IPlatform {
         String url = String.format("https://www.renren163.com/search/-------------.html?wd=%s&submit=", text);
         List<Detial> detials = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> lis = jx.selN("//ul[@id='searchList']/li");
             for (JXNode node : lis) {

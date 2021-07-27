@@ -2,11 +2,9 @@ package com.xh.play.platforms;
 
 import android.util.Log;
 
-import com.nostra13.universalimageloader.utils.L;
 import com.xh.play.entities.Detial;
 import com.xh.play.entities.ListMove;
 import com.xh.play.entities.Title;
-import com.xh.play.platforms.IPlatforms;
 import com.xh.play.utils.Util;
 
 import org.json.JSONObject;
@@ -20,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AiKanMeiJu implements IPlatform {
+public class AiKanMeiJu extends AbsPlatform {
     private static final String TAG = "AiKanMeiJu";
     private static final String HOST = "https://www.akmeiju.com";
 
@@ -35,7 +33,7 @@ public class AiKanMeiJu implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> titles = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//div[@class='row']/div/ul/li/a");
             for (JXNode node : nodes) {
@@ -63,7 +61,7 @@ public class AiKanMeiJu implements IPlatform {
         List<Detial> detials = new ArrayList<>();
         listMove.detials = detials;
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//div[@class='myui-panel_bd']/ul[@class='myui-vodlist clearfix']/li/div");
             for (JXNode node : nodes) {
@@ -124,7 +122,7 @@ public class AiKanMeiJu implements IPlatform {
     @Override
     public boolean playDetail(Detial detial) {
         try {
-            Document document = Jsoup.connect(detial.detialUrl).get();
+            Document document = createConnection(detial.detialUrl).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> details = jx.selN("//div[@class='myui-content__detail']");
             String type = "";
@@ -193,7 +191,7 @@ public class AiKanMeiJu implements IPlatform {
     public String play(Detial.DetailPlayUrl playUrl) {
         Log.e(TAG, playUrl.href);
         try {
-            Document document = Jsoup.connect(playUrl.href).get();
+            Document document = createConnection(playUrl.href).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> ress = jx.selN("//div/script/text()");
             for (JXNode node : ress) {
@@ -218,7 +216,7 @@ public class AiKanMeiJu implements IPlatform {
         String url = String.format("https://www.akmeiju.com/vsearch.html?wd=%s&submit=", text);
         List<Detial> detials = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> lis = jx.selN("//ul[@id='searchList']/li");
             for (JXNode node : lis) {

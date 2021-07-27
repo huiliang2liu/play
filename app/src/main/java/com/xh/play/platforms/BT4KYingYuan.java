@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BT4KYingYuan implements IPlatform {
+public class BT4KYingYuan extends AbsPlatform {
     private static final String HOST = "http://www.bt4kyy.cc";
 
     @Override
@@ -22,7 +22,7 @@ public class BT4KYingYuan implements IPlatform {
         String url = "http://www.bt4kyy.cc/";
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> nodes = jx.selN("//div[@class='nav mb_none']/span/a");
             for (JXNode node : nodes) {
                 String href = node.asElement().attr("href");
@@ -55,7 +55,7 @@ public class BT4KYingYuan implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> titles = new ArrayList();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> nodes = jx.selN("//div[@class='case']/div");
             if (nodes.size() > 0) {
                 nodes = nodes.get(0).sel("div/ul/li/a");
@@ -87,7 +87,7 @@ public class BT4KYingYuan implements IPlatform {
         List<Detial> detials =new ArrayList<>();
         listMove.detials = detials;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> divs = jx.selN("//div[@class='li_all']");
             for (JXNode div : divs) {
                 List<JXNode> nodes = div.sel("div[@class='li_img']/a/@href");
@@ -135,7 +135,7 @@ public class BT4KYingYuan implements IPlatform {
         List<Detial.DetailPlayUrl> playUrls = new ArrayList<>();
         detial.playUrls = playUrls;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(detial.detialUrl).get());
+            JXDocument jx = JXDocument.create(createConnection(detial.detialUrl).get());
             List<JXNode> divs = jx.selN("//div[@id='stab11']/div");
             for(JXNode div :divs){
                 String title = "";
@@ -163,7 +163,7 @@ public class BT4KYingYuan implements IPlatform {
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(playUrl.href).get());
+            JXDocument jx = JXDocument.create(createConnection(playUrl.href).get());
             List<JXNode> nodes = jx.selN("//div[@class='player']/script/text()");
             for(JXNode node:nodes){
                 String text = node.asString();
@@ -182,12 +182,12 @@ public class BT4KYingYuan implements IPlatform {
         String url ="http://www.bt4kyy.cc/search1.php";
         List<Detial> detials = new ArrayList<Detial>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).data("searchword",text).post());
+            JXDocument jx = JXDocument.create(createConnection(url).data("searchword",text).post());
             ListMove listMove = search(jx,url);
             detials.addAll(listMove.detials);
             while(listMove.next!=null&&!listMove.next.isEmpty()&&!url.equals(listMove.next)){
                 url = listMove.next;
-                listMove = search(JXDocument.create(Jsoup.connect(listMove.next).get()),listMove.next);
+                listMove = search(JXDocument.create(createConnection(listMove.next).get()),listMove.next);
                 detials.addAll(listMove.detials);
             }
         } catch (Exception e) {

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DianYingWang implements IPlatform {
+public class DianYingWang extends AbsPlatform {
     private static final String HOST = "https://www.6vw.cc";
 
     @Override
@@ -28,7 +28,7 @@ public class DianYingWang implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> as = jx.selN("//div[@class='menutv']/ul/li/a");
             for (JXNode a : as) {
                 Element element = a.asElement();
@@ -58,7 +58,7 @@ public class DianYingWang implements IPlatform {
         List<Detial> detials = new ArrayList<>();
         listMove.detials = detials;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> lis = jx.selN("//div[@class='listBox']/ul/li");
             for (JXNode ls : lis) {
                 List<JXNode> nodes = ls.sel("div[@class='listimg']/a/@href");

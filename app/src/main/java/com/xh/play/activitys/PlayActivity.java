@@ -2,7 +2,6 @@ package com.xh.play.activitys;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -37,6 +36,7 @@ import com.xh.play.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,6 +62,8 @@ public class PlayActivity extends Activity {
     TextView durationTime;
     @BindView(R.id.activity_play_sb)
     SeekBar playSb;
+    @BindView(R.id.activity_play__tv)
+    TextView tv;
     TabAdapter tabAdapter;
     IPlatform platform;
     Detial detial;
@@ -72,6 +74,23 @@ public class PlayActivity extends Activity {
     private float moveHeight = 300;
     ViewEmbellish stateLLEmbllish;
     ViewEmbellish rvEmbellish;
+    private Future future;
+    Runnable timeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            PoolManager.runUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (duration <= 0)
+                        return;
+                    long position = videoView.getCurrentPosition();
+                    int progress = (int) (position * 100 / duration);
+                    playSb.setProgress(progress);
+                    playTime.setText(timeFormat(position));
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,13 +101,23 @@ public class PlayActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(R.layout.activity_play);
         ButterKnife.bind(this);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (detial.playUrls == null || detial.playUrls.size() <= 0)
+                    getPlayList();
+                else
+                    getUrl();
+                tv.setVisibility(View.GONE);
+            }
+        });
         stateLLEmbllish = new ViewEmbellish(stateLL);
         rvEmbellish = new ViewEmbellish(recyclerView);
         findViewById(R.id.activity_play_cling).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplication(), ClingActivity.class);
-                intent.putExtra(ClingActivity.PLAY_URL,videoView.getPath());
+                intent.putExtra(ClingActivity.PLAY_URL, videoView.getPath());
                 startActivity(intent);
             }
         });
@@ -113,63 +142,14 @@ public class PlayActivity extends Activity {
                     tabAdapter.notifyDataSetChanged(index);
                     index = position;
                     tabAdapter.notifyDataSetChanged(index);
-                    PoolManager.io(new Runnable() {
-                        @Override
-                        public void run() {
-                            final String url = platform.play(((MyTap) tabAdapter.getItem(position)).url);
-                            if (url == null || url.isEmpty()) {
-                                Log.e(TAG, "play error");
-                                Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            PoolManager.runUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    videoView.play(url);
-                                }
-                            });
-                        }
-                    });
+                    playSb.setProgress(0);
+                    durationTime.setText("00:00");
+                    playTime.setText("00:00");
+                    getUrl();
                 }
             });
-            PoolManager.io(new Runnable() {
-                @Override
-                public void run() {
-                    if (platform.playDetail(detial)) {
-                        if (detial.playUrls.size() < 0) {
-                            Log.e(TAG, "no url");
-                            Toast.makeText(getApplication(), "没有播放地址", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        final List<Tap> taps = new ArrayList<>();
-                        for (int i = 0; i < detial.playUrls.size(); i++) {
-                            MyTap myTap = new MyTap();
-                            myTap.url = detial.playUrls.get(i);
-                            myTap.title = myTap.url.title;
-                            myTap.select = i == index;
-                            taps.add(myTap);
-                        }
-                        final String url = platform.play(detial.playUrls.get(0));
-                        if (url == null || url.isEmpty()) {
-                            Log.e(TAG, "play error");
-                            Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        PoolManager.runUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                videoView.play(url);
-                                tabAdapter.addItem(taps);
-                                hide();
-                            }
-                        });
-                    } else
-                        Toast.makeText(getApplication(), "解析播放地址失败", Toast.LENGTH_SHORT).show();
-                    ;
-                }
-            });
+            getPlayList();
         }
-
         videoView.setMediaListener(new MediaListener() {
             @Override
             public void onCompletion() {
@@ -187,8 +167,10 @@ public class PlayActivity extends Activity {
 
             @Override
             public boolean onInfo(int what, int extra) {
+                Log.e(TAG, String.format("what:%s,extra:%s", what, extra));
                 if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START && platform != null) {
                     duration = videoView.getDuration();
+                    Log.e(TAG, "duration:" + duration);
                     PoolManager.runUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -203,13 +185,7 @@ public class PlayActivity extends Activity {
             public void onBufferingUpdate(int percent) {
                 if (percent > playSb.getProgress())
                     playSb.setSecondaryProgress(percent);
-                if (duration <= 0)
-                    return;
-                long position = videoView.getCurrentPosition();
-                int progress = (int) (position * 100 / duration);
-                playSb.setProgress(progress);
-                Log.e(TAG, "duration:" + duration + ",position:" + position + ",progress:" + progress);
-                playTime.setText(timeFormat(position));
+
             }
 
             @Override
@@ -234,6 +210,67 @@ public class PlayActivity extends Activity {
                 long seek = duration * playTime / 100;
                 Log.e(TAG, "playTime:" + playTime + ",seek:" + seek);
                 videoView.seekTo(seek);
+            }
+        });
+    }
+
+    private void getUrl() {
+        PoolManager.io(new Runnable() {
+            @Override
+            public void run() {
+                final String url = platform.play(((MyTap) tabAdapter.getItem(index)).url);
+                if (url == null || url.isEmpty()) {
+                    Log.e(TAG, "play error");
+                    Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
+                    tv.setVisibility(View.VISIBLE);
+                    return;
+                }
+                PoolManager.runUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        videoView.play(url);
+                    }
+                });
+            }
+        });
+    }
+
+    private void getPlayList() {
+        PoolManager.io(new Runnable() {
+            @Override
+            public void run() {
+                if (platform.playDetail(detial)) {
+                    if (detial.playUrls.size() < 0) {
+                        Log.e(TAG, "no url");
+                        Toast.makeText(getApplication(), "没有播放地址", Toast.LENGTH_SHORT).show();
+                        tv.setVisibility(View.VISIBLE);
+                        return;
+                    }
+                    final List<Tap> taps = new ArrayList<>();
+                    for (int i = 0; i < detial.playUrls.size(); i++) {
+                        MyTap myTap = new MyTap();
+                        myTap.url = detial.playUrls.get(i);
+                        myTap.title = myTap.url.title;
+                        myTap.select = i == index;
+                        taps.add(myTap);
+                    }
+                    final String url = platform.play(detial.playUrls.get(0));
+                    if (url == null || url.isEmpty()) {
+                        Log.e(TAG, "play error");
+                        Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    PoolManager.runUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            videoView.play(url);
+                            tabAdapter.addItem(taps);
+                            hide();
+                        }
+                    });
+                } else
+                    Toast.makeText(getApplication(), "解析播放地址失败", Toast.LENGTH_SHORT).show();
+                ;
             }
         });
     }
@@ -291,6 +328,12 @@ public class PlayActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        try {
+            future.cancel(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        PoolManager.scheduledRemove(timeRunnable);
     }
 
     @Override
@@ -344,7 +387,7 @@ public class PlayActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_FULLSCREEN);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN);
 //        decorView.setSystemUiVisibility(
 //                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 //                         |View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -355,8 +398,8 @@ public class PlayActivity extends Activity {
 //    );
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
-            getWindow().setNavigationBarColor(Color.TRANSPARENT);
         }
+        future=PoolManager.scheduled(timeRunnable, 1, 1);
 
     }
 

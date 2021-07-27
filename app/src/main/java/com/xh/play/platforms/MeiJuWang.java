@@ -5,7 +5,6 @@ import android.util.Log;
 import com.xh.play.entities.Detial;
 import com.xh.play.entities.ListMove;
 import com.xh.play.entities.Title;
-import com.xh.play.platforms.IPlatforms;
 import com.xh.play.utils.Util;
 
 import org.jsoup.Jsoup;
@@ -18,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeiJuWang implements IPlatform {
+public class MeiJuWang extends AbsPlatform {
     private static final String TAG = "MeiJuWang";
     private static final String HOST = "https://91mjw.com";
 
@@ -33,7 +32,7 @@ public class MeiJuWang implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> list = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> titles = jx.selN("//ul[@class='nav']/li/a");
             for (JXNode node : titles) {
@@ -60,7 +59,7 @@ public class MeiJuWang implements IPlatform {
         Log.e(TAG, url);
         ListMove listMove = new ListMove();
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<Detial> detials = new ArrayList<>();
             List<JXNode> articles = jx.selN("//div[@class='m-movies clearfix']/article");
@@ -119,7 +118,7 @@ public class MeiJuWang implements IPlatform {
     @Override
     public boolean playDetail(Detial detial) {
         try {
-            Document document = Jsoup.connect(detial.detialUrl).get();
+            Document document = createConnection(detial.detialUrl).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> strongs = jx.selN("//div[@class='video_info']/text()");
             if (strongs.size() > 0) {
@@ -157,7 +156,7 @@ public class MeiJuWang implements IPlatform {
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
         try {
-            Document document = Jsoup.connect(playUrl.href).get();
+            Document document = createConnection(playUrl.href).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//section[@class='container']/script/text()");
             if (nodes.size() <= 0)

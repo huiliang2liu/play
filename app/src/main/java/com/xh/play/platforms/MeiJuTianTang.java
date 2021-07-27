@@ -20,7 +20,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeiJuTianTang implements IPlatform {
+public class MeiJuTianTang extends AbsPlatform {
     private static final String HOST = "https://www.meijutt.tv";
     private static final String TAG = "MeiJuTianTang";
 
@@ -28,7 +28,7 @@ public class MeiJuTianTang implements IPlatform {
     public List<Title> types() {
         List<Title> titles = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(HOST).get();
+            Document document = createConnection(HOST).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> as = jx.selN("//ul[@class='secNacUl']/li/a");
             for (JXNode node : as) {
@@ -55,7 +55,7 @@ public class MeiJuTianTang implements IPlatform {
         //li[@id='drama']/div/a
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> nodes = jx.selN("//li[@id='drama']/div/a");
             for (JXNode node : nodes) {
                 Element element = node.asElement();
@@ -82,7 +82,7 @@ public class MeiJuTianTang implements IPlatform {
         List<Detial> detials = new ArrayList<>();
         listMove.detials = detials;
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//div/div[@class='page']/a");
             String next = "";
@@ -134,7 +134,7 @@ public class MeiJuTianTang implements IPlatform {
         Log.e(TAG, "playDetail");
         Log.e(TAG, detial.detialUrl);
         try {
-            Document document = Jsoup.connect(detial.detialUrl).get();
+            Document document = createConnection(detial.detialUrl).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//ul[@class='mn_list_li_movie']/ul/li/a/@href");
             String href = "";
@@ -144,7 +144,7 @@ public class MeiJuTianTang implements IPlatform {
                     continue;
                 href = Util.dealWithUrl(href, detial.detialUrl, HOST);
             }
-            document = Jsoup.connect(href).get();
+            document = createConnection(href).get();
             jx = JXDocument.create(document);
             nodes = jx.selN("//div[@class='ptitle']/script/@src");
             if (nodes.size() <= 0)
@@ -198,7 +198,7 @@ public class MeiJuTianTang implements IPlatform {
         String url = "https://www.meijutt.tv/sousuo/index.asp";
         List<Detial> detials = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(url).data("searchword", text).post();
+            Document document = createConnection(url).data("searchword", text).post();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//div/div[@class='page']/a");
             String next = "";

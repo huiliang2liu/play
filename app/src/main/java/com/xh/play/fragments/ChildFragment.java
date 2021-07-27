@@ -1,8 +1,8 @@
 package com.xh.play.fragments;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
+import android.widget.TextView;
 
 import com.xh.play.R;
 import com.xh.play.adapter.FragmentAdapter;
@@ -12,7 +12,6 @@ import com.xh.play.adapters.TextViewAdapter;
 import com.xh.play.entities.TextViewData;
 import com.xh.play.entities.Title;
 import com.xh.play.platforms.IPlatform;
-import com.xh.play.platforms.IPlatforms;
 import com.xh.play.thread.PoolManager;
 import com.xh.play.widget.RecyclerView;
 import com.xh.play.widget.ViewPager;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.fragment.app.Fragment;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -30,15 +30,12 @@ public class ChildFragment extends BaseFragment {
     TextViewAdapter textView;
     @BindView(R.id.child_fragment_vp)
     ViewPager viewPager;
+    @BindView(R.id.child_fragment_tv)
+    TextView tv;
     IPlatform platform;
     String url;
-    IPlatforms platforms;
     int index = 0;
     private FragmentAdapter adapter;
-
-    public void setPlatforms(IPlatforms platforms) {
-        this.platforms = platforms;
-    }
 
     public ChildFragment setUrl(String url) {
         this.url = url;
@@ -54,6 +51,13 @@ public class ChildFragment extends BaseFragment {
     public void bindView() {
         super.bindView();
         ButterKnife.bind(this, view);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tv.setVisibility(View.GONE);
+                getType();
+            }
+        });
         textView = new TextViewAdapter(tab) {
             @Override
             public ViewHolder<TextViewData> getViewHolder(int itemType) {
@@ -76,10 +80,24 @@ public class ChildFragment extends BaseFragment {
                 index = position;
             }
         });
+        getType();
+
+    }
+
+    private void getType() {
         PoolManager.io(new Runnable() {
             @Override
             public void run() {
                 List<Title> list = platform.titles(url);
+                if (list.size() <= 0) {
+                    PoolManager.runUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv.setVisibility(View.VISIBLE);
+                        }
+                    });
+                    return;
+                }
                 List<TextViewData> datas = new ArrayList<>();
                 List<Fragment> fragments = new ArrayList<>(list.size());
                 for (Title title : list) {
@@ -101,7 +119,6 @@ public class ChildFragment extends BaseFragment {
                 });
             }
         });
-
     }
 
     @Override

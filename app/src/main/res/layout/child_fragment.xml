@@ -4,6 +4,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="#f00"
+        android:textSize="35sp"
+        android:id="@+id/child_fragment_tv"
+        android:text="获取title失败"/>
     <com.xh.play.widget.RecyclerView
         android:layout_width="match_parent"
         app:line="1dp"

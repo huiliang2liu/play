@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -35,6 +37,8 @@ public class PlatformActivity extends FragmentActivity implements View.OnClickLi
     ViewPager viewPager;
     @BindView(R.id.activity_platform_ll)
     LinearLayout layout;
+    @BindView(R.id.activity_platform_tv)
+    TextView textView;
     List<TextView> buttons = new ArrayList<>();
     IPlatform platform;
     private FragmentAdapter adapter;
@@ -42,15 +46,33 @@ public class PlatformActivity extends FragmentActivity implements View.OnClickLi
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         setContentView(R.layout.activity_platform);
         ButterKnife.bind(this);
         platform = (IPlatform) getIntent().getSerializableExtra(PLATFORM);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getTitles();
+                textView.setVisibility(View.GONE);
+            }
+        });
+        getTitles();
+    }
+
+    private void getTitles() {
         PoolManager.io(new Runnable() {
             @Override
             public void run() {
                 final List<Title> titles = platform.types();
-                if(titles.size()<=0){
-                    Log.e(TAG,"获取标题失败");
+                if (titles.size() <= 0) {
+                    Log.e(TAG, "获取标题失败");
+                    PoolManager.runUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textView.setVisibility(View.VISIBLE);
+                        }
+                    });
                     return;
                 }
                 PoolManager.runUiThread(new Runnable() {

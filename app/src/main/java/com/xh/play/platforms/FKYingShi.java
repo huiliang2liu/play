@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FKYingShi implements IPlatform {
+public class FKYingShi extends AbsPlatform {
     private final static String HOST = "https://www.25ys.net";
 
     @Override
@@ -23,7 +23,7 @@ public class FKYingShi implements IPlatform {
         String url = "https://www.25ys.net/";
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> nodes = jx.selN("//div[@class='row']/ul/li/a");
             for (JXNode node : nodes) {
                 Element element = node.asElement();
@@ -44,7 +44,7 @@ public class FKYingShi implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> titles = new ArrayList();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> uls = jx.selN("//div[@class='stui-pannel_hd']/ul");
             for (JXNode ul : uls) {
                 List<JXNode> nodes = ul.sel("li/span/text()");
@@ -82,7 +82,7 @@ public class FKYingShi implements IPlatform {
         List<Detial> detials = new ArrayList();
         listMove.detials = detials;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> as = jx.selN("//div[@class='stui-vodlist__box']/a");
             for (JXNode a : as) {
                 Element element = a.asElement();
@@ -118,7 +118,7 @@ public class FKYingShi implements IPlatform {
     @Override
     public boolean playDetail(Detial detial) {
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(detial.detialUrl).get());
+            JXDocument jx = JXDocument.create(createConnection(detial.detialUrl).get());
             List<JXNode> nodes = jx.selN("//a[@class='fzz']");
             if (nodes.size() <= 0)
                 return false;
@@ -146,7 +146,7 @@ public class FKYingShi implements IPlatform {
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(playUrl.href).get());
+            JXDocument jx = JXDocument.create(createConnection(playUrl.href).get());
             List<JXNode> nodes = jx.selN("//script/text()");
             for (JXNode node : nodes) {
                 String text = node.asString();
@@ -181,7 +181,7 @@ public class FKYingShi implements IPlatform {
         List<Detial> detials = new ArrayList<>();
         listMove.detials = detials;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> as = jx.selN("//div[@class='thumb']/a");
             for (JXNode a : as) {
                 Element element = a.asElement();

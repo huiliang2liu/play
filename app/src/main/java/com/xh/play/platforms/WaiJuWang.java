@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WaiJuWang implements IPlatform {
+public class WaiJuWang extends AbsPlatform {
     private static final String HOST = "https://www.5kysw.com";
     private static final String TAG = "WaiJuWang";
 
@@ -28,7 +28,7 @@ public class WaiJuWang implements IPlatform {
         String url = "https://www.5kysw.com/";
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> as = jx.selN("//ul[@class='menulist hidden-xs']/li/a");
             for (JXNode node : as) {
                 Element element = node.asElement();
@@ -56,7 +56,7 @@ public class WaiJuWang implements IPlatform {
         Log.e(TAG, "titles");
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> dds = jx.selN("//dd[@class='clearfix']");
             if (dds.size() > 0) {
                 dds = dds.get(0).sel("a");
@@ -84,7 +84,7 @@ public class WaiJuWang implements IPlatform {
         Log.e(TAG, "list");
         ListMove listMove = new ListMove();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> lis = jx.selN("//div[@class='item']/ul[@class='clearfix']/li/a");
             List<Detial> detials = new ArrayList();
             for (JXNode li : lis) {
@@ -129,7 +129,7 @@ public class WaiJuWang implements IPlatform {
         Log.e(TAG, "playDetail");
         List<Detial.DetailPlayUrl> detailPlayUrls = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(detial.detialUrl).get());
+            JXDocument jx = JXDocument.create(createConnection(detial.detialUrl).get());
             List<JXNode> divs = jx.selN("//div[@id='playlist']/div");
             for (JXNode div : divs) {
                 List<JXNode> nodes = div.sel("a/@title");
@@ -162,7 +162,7 @@ public class WaiJuWang implements IPlatform {
     public String play(Detial.DetailPlayUrl playUrl) {
         Log.e(TAG, "play");
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(playUrl.href).get());
+            JXDocument jx = JXDocument.create(createConnection(playUrl.href).get());
             List<JXNode> nodes = jx.selN("//script/text()");
             for (JXNode node : nodes) {
                 String text = node.asString();
@@ -183,7 +183,7 @@ public class WaiJuWang implements IPlatform {
         List<Detial> detials =new ArrayList<Detial>();
         String url = "https://www.5kysw.com/vodsearch.html";
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).data("wd", text).post());
+            JXDocument jx = JXDocument.create(createConnection(url).data("wd", text).post());
             List<JXNode> dls = jx.selN("//dl[@class='content']");
             for (JXNode dl : dls) {
                 List<JXNode> nodes = dl.sel("dt/a");

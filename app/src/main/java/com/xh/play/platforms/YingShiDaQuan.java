@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class YingShiDaQuan implements IPlatform {
+public class YingShiDaQuan extends AbsPlatform {
     private static final String TAG = "YingShiDaQuan";
     private static final String HOST = "https://73m.cc";
 
@@ -56,7 +56,7 @@ public class YingShiDaQuan implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> nodes = jx.selN("//div[@class='slideDown-box']/ul");
             if (nodes.size() > 0) {
                 nodes = nodes.get(0).sel("li/a");
@@ -84,7 +84,7 @@ public class YingShiDaQuan implements IPlatform {
         List<Detial> detials = new ArrayList<>();
         listMove.detials = detials;
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> divs = jx.selN("//div[@class='myui-panel_bd']/ul[@class='myui-vodlist clearfix']/li/div");
             for (JXNode node : divs) {
@@ -142,7 +142,7 @@ public class YingShiDaQuan implements IPlatform {
     @Override
     public boolean playDetail(Detial detail) {
         try {
-            Document document = Jsoup.connect(detail.detialUrl).get();
+            Document document = createConnection(detail.detialUrl).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> nodes = jx.selN("//div[@class='myui-content__detail']");
             if (nodes.size() > 0) {
@@ -183,7 +183,7 @@ public class YingShiDaQuan implements IPlatform {
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
         try {
-            Document document = Jsoup.connect(playUrl.href).get();
+            Document document = createConnection(playUrl.href).get();
             JXDocument jx = JXDocument.create(document);
             String res = jx.selN("//div/script/text()").get(0).asString();
             res = res.substring(res.indexOf("=") + 1);
@@ -201,7 +201,7 @@ public class YingShiDaQuan implements IPlatform {
         String url = String.format("https://73m.cc/search/-------------.html?wd=%s&submit=", text);
         List<Detial> detials = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> lis = jx.selN("//ul[@id='searchList']/li");
             for (JXNode node : lis) {

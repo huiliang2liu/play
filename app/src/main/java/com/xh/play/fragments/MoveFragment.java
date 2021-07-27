@@ -10,10 +10,8 @@ import com.xh.play.adapter.RecyclerViewAdapter;
 import com.xh.play.adapters.TextViewAdapter;
 import com.xh.play.entities.TextViewData;
 import com.xh.play.platforms.IPlatform;
-import com.xh.play.platforms.IPlatforms;
 import com.xh.play.widget.RecyclerView;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 

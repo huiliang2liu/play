@@ -2,31 +2,21 @@ package com.xh.play.fragments;
 
 import android.content.Intent;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.fragment.app.Fragment;
 
 import com.xh.play.PlayApplication;
 import com.xh.play.R;
 import com.xh.play.activitys.PlayActivity;
-import com.xh.play.adapter.FragmentAdapter;
 import com.xh.play.adapter.RecyclerViewAdapter;
-import com.xh.play.adapters.ChildAdapter;
 import com.xh.play.adapters.LiveAdapter;
 import com.xh.play.adapters.TabAdapter;
 import com.xh.play.entities.Detial;
 import com.xh.play.entities.Live;
 import com.xh.play.entities.Tap;
-import com.xh.play.entities.Title;
 import com.xh.play.platforms.DianYingMao;
 import com.xh.play.platforms.IPlatform;
-import com.xh.play.platforms.IPlatforms;
 import com.xh.play.thread.PoolManager;
 import com.xh.play.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;

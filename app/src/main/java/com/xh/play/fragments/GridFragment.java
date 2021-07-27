@@ -2,6 +2,7 @@ package com.xh.play.fragments;
 
 import android.content.Intent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -17,6 +18,7 @@ import com.xh.play.thread.PoolManager;
 import com.xh.play.widget.RecyclerView;
 
 import androidx.annotation.NonNull;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -28,6 +30,8 @@ public class GridFragment extends BaseFragment {
     ChildAdapter adapter;
     @BindView(R.id.fragment_grid_srl)
     SmartRefreshLayout smartRefreshLayout;
+    @BindView(R.id.fragment_grid_tv)
+    TextView textView;
     String next;
     private boolean loading = false;
 
@@ -40,13 +44,20 @@ public class GridFragment extends BaseFragment {
     public void bindView() {
         super.bindView();
         ButterKnife.bind(this, view);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                load(false);
+                textView.setVisibility(View.GONE);
+            }
+        });
         adapter = new ChildAdapter(recyclerView);
         adapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, long id) {
-                Intent intent =new Intent(getContext(), PlayActivity.class);
-                intent.putExtra(PlayActivity.PLATFORMS,platform);
-                intent.putExtra(PlayActivity.DETAIL,adapter.getItem(position));
+                Intent intent = new Intent(getContext(), PlayActivity.class);
+                intent.putExtra(PlayActivity.PLATFORMS, platform);
+                intent.putExtra(PlayActivity.DETAIL, adapter.getItem(position));
                 startActivity(intent);
             }
         });
@@ -86,6 +97,8 @@ public class GridFragment extends BaseFragment {
                         if (loadMore) {
                             smartRefreshLayout.finishLoadMore();
                         } else {
+                            if (listMove.detials.size() <= 0)
+                                textView.setVisibility(View.VISIBLE);
                             smartRefreshLayout.finishRefresh();
                             adapter.clean();
                         }

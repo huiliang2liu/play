@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DianYingMao implements IPlatform {
+public class DianYingMao extends AbsPlatform {
     private static final String HOTS = "https://www.mvcat.com";
     private static final String TAG = "DianYingMao";
 
@@ -70,7 +70,7 @@ public class DianYingMao implements IPlatform {
         List<Detial> detials = new ArrayList<>();
         listMove.detials = detials;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> as = jx.selN("//div[@class='ipages columns clear']/a");
             for (JXNode a : as) {
                 String href = a.asElement().attr("href");
@@ -132,7 +132,7 @@ public class DianYingMao implements IPlatform {
         String url = "https://www.mvcat.com/live/";
         List<Live> detailPlayUrls = new ArrayList<>();
         try {
-            Document document = Jsoup.connect(url).get();
+            Document document = createConnection(url).get();
             JXDocument jx = JXDocument.create(document);
             List<JXNode> lis = jx.selN("//ul[@class='tabs']/li");
             for (JXNode li : lis) {

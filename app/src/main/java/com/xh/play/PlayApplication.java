@@ -11,7 +11,6 @@ import com.xh.play.platforms.DianYingMao;
 import com.xh.play.platforms.DianYingWang;
 import com.xh.play.platforms.FKYingShi;
 import com.xh.play.platforms.IPlatform;
-import com.xh.play.platforms.IPlatforms;
 import com.xh.play.platforms.AiKanMeiJu;
 import com.xh.play.platforms.MeiJuNiao;
 import com.xh.play.platforms.MeiJuTianTang;
@@ -20,6 +19,7 @@ import com.xh.play.platforms.RenRen;
 import com.xh.play.platforms.UUMeiJu;
 import com.xh.play.platforms.WaiJuWang;
 import com.xh.play.platforms.WuKongMeiJu;
+import com.xh.play.platforms.XiGuaShiPin;
 import com.xh.play.platforms.YingShiDaQuan;
 
 import java.util.ArrayList;
@@ -51,5 +51,6 @@ public class PlayApplication extends Application {
         platformList.add(new MeiJuNiao());
         platformList.add(new DianYingMao());
         platformList.add(new BT4KYingYuan());
+        platformList.add(new XiGuaShiPin());
     }
 }

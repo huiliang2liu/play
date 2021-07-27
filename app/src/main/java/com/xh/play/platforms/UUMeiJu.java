@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UUMeiJu implements IPlatform {
+public class UUMeiJu extends AbsPlatform {
     private static final String HOST = "https://www.uumjw.com";
     private static final List<String> names = new ArrayList<>();
 
@@ -32,7 +32,7 @@ public class UUMeiJu implements IPlatform {
         String url = "https://www.uumjw.com/vtype/1.html";
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> nodes = jx.selN("//li[@class='grid-item']/a");
             for (JXNode node : nodes) {
                 Element element = node.asElement();
@@ -55,7 +55,7 @@ public class UUMeiJu implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> divs = jx.selN("//div[@class='scroll-content']");
             for (JXNode div : divs) {
                 List<JXNode> nodes = div.sel("a/text()");
@@ -89,7 +89,7 @@ public class UUMeiJu implements IPlatform {
         List<Detial> detials = new ArrayList();
         listMove.detials = detials;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> divs = jx.selN("//div[@class='module-item']");
             for (JXNode div : divs) {
                 List<JXNode> nodes = div.sel("div/a");
@@ -130,7 +130,7 @@ public class UUMeiJu implements IPlatform {
     @Override
     public boolean playDetail(Detial detial) {
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(detial.detialUrl).get());
+            JXDocument jx = JXDocument.create(createConnection(detial.detialUrl).get());
             List<JXNode> scroll_contents = jx.selN("//div[@class='scroll-content']");
             List<JXNode> titles = jx.selN("//div[@class='module-tab-content']/div/span/text()");
             int max = scroll_contents.size() > titles.size() ? scroll_contents.size() : titles.size();
@@ -165,7 +165,7 @@ public class UUMeiJu implements IPlatform {
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(playUrl.href).get());
+            JXDocument jx = JXDocument.create(createConnection(playUrl.href).get());
             List<JXNode> nodes = jx.selN("//script/text()");
             for (JXNode node : nodes) {
                 String text = node.asString();
@@ -186,7 +186,7 @@ public class UUMeiJu implements IPlatform {
         String url = String.format("https://www.uumjw.com/index.php/vsearch.html?wd=%s", text);
         List<Detial> detials = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> divs = jx.selN("//div[@class='module-item-pic']");
             for (JXNode div : divs) {
                 List<JXNode> nodes = div.sel("a/@href");

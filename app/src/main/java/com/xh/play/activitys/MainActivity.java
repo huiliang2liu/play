@@ -10,13 +10,10 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.xh.play.PlayApplication;
 import com.xh.play.R;
 import com.xh.play.adapter.FragmentAdapter;
 import com.xh.play.fragments.LiveFragment;
-import com.xh.play.fragments.AkmjFragment;
 import com.xh.play.fragments.MoveFragment;
-import com.xh.play.platforms.IPlatforms;
 import com.xh.play.widget.ViewPager;
 
 import java.util.ArrayList;

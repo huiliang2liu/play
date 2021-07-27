@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WuKongMeiJu implements IPlatform {
+public class WuKongMeiJu extends AbsPlatform {
     private final static String HOTS = "https://www.wukongmeiju.com";
 
     @Override
@@ -29,7 +29,7 @@ public class WuKongMeiJu implements IPlatform {
     public List<Title> titles(String url) {
         List<Title> titles = new ArrayList<>();
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> as = jx.selN("//ul[@class='nav navbar-nav ff-nav']/li/a");
             for (JXNode a : as) {
                 Element element = a.asElement();
@@ -57,7 +57,7 @@ public class WuKongMeiJu implements IPlatform {
         List<Detial> detials = new ArrayList();
         listMove.detials = detials;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(url).get());
+            JXDocument jx = JXDocument.create(createConnection(url).get());
             List<JXNode> as = jx.selN("//p[@class='image']/a");
             for (JXNode a : as) {
                 String href = a.asElement().attr("href");
@@ -99,7 +99,7 @@ public class WuKongMeiJu implements IPlatform {
         List<Detial.DetailPlayUrl> playUrls = new ArrayList<>();
         detial.playUrls = playUrls;
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(detial.detialUrl).get());
+            JXDocument jx = JXDocument.create(createConnection(detial.detialUrl).get());
             List<JXNode> titles = jx.selN("//ul[@class='nav nav-tabs ff-playurl-tab']/li/a/span/text()");
             List<JXNode> uls = jx.selN("//ul[@data-more]");
             int max = titles.size() > uls.size() ? uls.size() : titles.size();
@@ -128,7 +128,7 @@ public class WuKongMeiJu implements IPlatform {
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
         try {
-            JXDocument jx = JXDocument.create(Jsoup.connect(playUrl.href).get());
+            JXDocument jx = JXDocument.create(createConnection(playUrl.href).get());
             List<JXNode> nodes = jx.selN("//script/text()");
             for (JXNode node : nodes) {
                 String text = node.asString();
