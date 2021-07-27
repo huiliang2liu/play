@@ -7,6 +7,7 @@ import androidx.multidex.MultiDex;
 
 import com.xh.play.image.IImageLoad;
 import com.xh.play.platforms.BT4KYingYuan;
+import com.xh.play.platforms.CaoMinDianYing;
 import com.xh.play.platforms.DianYingMao;
 import com.xh.play.platforms.DianYingWang;
 import com.xh.play.platforms.FKYingShi;
@@ -52,5 +53,6 @@ public class PlayApplication extends Application {
         platformList.add(new DianYingMao());
         platformList.add(new BT4KYingYuan());
         platformList.add(new XiGuaShiPin());
+        platformList.add(new CaoMinDianYing());
     }
 }
