@@ -41,7 +41,7 @@ import java.util.concurrent.Future;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PlayActivity extends Activity {
+public class PlayActivity extends Activity implements View.OnClickListener {
     public static final String TAG = "PlayActivity";
     public static final String DETAIL = "detail";
     public static final String DETAIL_PLAY_URL = "detail_play_url";
@@ -64,6 +64,17 @@ public class PlayActivity extends Activity {
     SeekBar playSb;
     @BindView(R.id.activity_play__tv)
     TextView tv;
+    @BindView(R.id.activity_play_speed_ll)
+    LinearLayout speedLl;
+    @BindView(R.id.activity_play_speed_05)
+    TextView speed05;
+    @BindView(R.id.activity_play_speed_10)
+    TextView speed10;
+    @BindView(R.id.activity_play_speed_15)
+    TextView speed15;
+    @BindView(R.id.activity_play_speed_20)
+    TextView speed20;
+    TextView speed;
     TabAdapter tabAdapter;
     IPlatform platform;
     Detial detial;
@@ -74,6 +85,7 @@ public class PlayActivity extends Activity {
     private float moveHeight = 300;
     ViewEmbellish stateLLEmbllish;
     ViewEmbellish rvEmbellish;
+    ViewEmbellish speedLlEmbellish;
     private Future future;
     Runnable timeRunnable = new Runnable() {
         @Override
@@ -101,6 +113,12 @@ public class PlayActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(R.layout.activity_play);
         ButterKnife.bind(this);
+        speed05.setOnClickListener(this);
+        speed10.setOnClickListener(this);
+        speed15.setOnClickListener(this);
+        speed20.setOnClickListener(this);
+        speed = speed10;
+        speed.setBackgroundColor(Color.WHITE);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +131,7 @@ public class PlayActivity extends Activity {
         });
         stateLLEmbllish = new ViewEmbellish(stateLL);
         rvEmbellish = new ViewEmbellish(recyclerView);
+        speedLlEmbellish = new ViewEmbellish(speedLl);
         findViewById(R.id.activity_play_cling).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,6 +140,7 @@ public class PlayActivity extends Activity {
                 startActivity(intent);
             }
         });
+
         playUrl = getIntent().getParcelableExtra(DETAIL_PLAY_URL);
         if (playUrl != null) {
             textView.setText(playUrl.title);
@@ -319,6 +339,7 @@ public class PlayActivity extends Activity {
                 }
             });
             objectAnimators.add(objectAnimator);
+            objectAnimators.add(AnimatorFactory.translationX(speedLlEmbellish, 300, 0, moveHeight));
             if (platform != null)
                 objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, 0, moveHeight));
             AnimatorFactory.startAnimation(objectAnimators);
@@ -374,6 +395,7 @@ public class PlayActivity extends Activity {
             }
         });
         objectAnimators.add(objectAnimator);
+        objectAnimators.add(AnimatorFactory.translationX(speedLlEmbellish, 300, moveHeight, 0));
         if (platform != null)
             objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, moveHeight, 0));
         AnimatorFactory.startAnimation(objectAnimators);
@@ -399,7 +421,7 @@ public class PlayActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-        future=PoolManager.scheduled(timeRunnable, 1, 1);
+        future = PoolManager.scheduled(timeRunnable, 1, 1);
 
     }
 
@@ -426,5 +448,13 @@ public class PlayActivity extends Activity {
         else
             sb.append("00");
         return sb.toString();
+    }
+
+    @Override
+    public void onClick(View v) {
+        speed.setBackgroundColor(Color.TRANSPARENT);
+        speed = (TextView) v;
+        speed.setBackgroundColor(Color.WHITE);
+        videoView.setSpeed(Float.valueOf(speed.getText().toString()));
     }
 }

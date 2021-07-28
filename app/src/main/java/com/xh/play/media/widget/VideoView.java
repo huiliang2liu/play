@@ -332,4 +332,8 @@ public class VideoView extends SurfaceView implements SurfaceHolder.Callback, Me
             return mMediaPlayer.getCurrentPosition();
         return 0;
     }
+
+    public void setSpeed(float speed){
+        mMediaPlayer.setSpeed(speed);
+    }
 }

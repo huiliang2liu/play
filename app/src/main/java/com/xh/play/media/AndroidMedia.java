@@ -102,7 +102,7 @@ class AndroidMedia implements IMedia, MediaPlayer.OnPreparedListener, MediaPlaye
     public void setSpeed(float speed) {
         if (android.os.Build.VERSION.SDK_INT >= 23) {
             try {
-                mMediaPlayer.setPlaybackParams(mMediaPlayer.getPlaybackParams().setSpeed(1.5f));
+                mMediaPlayer.setPlaybackParams(mMediaPlayer.getPlaybackParams().setSpeed(speed));
                 mMediaPlayer.pause();
                 mMediaPlayer.start();
             } catch (Exception e) {
