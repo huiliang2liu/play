@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="VideoView">
+        <attr name="video_type" format="enum">
+            <enum name="android" value="0" />
+            <enum name="ijk" value="1" />
+            <enum name="exo" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

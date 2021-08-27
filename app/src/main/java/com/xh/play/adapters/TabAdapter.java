@@ -5,9 +5,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.xh.base.adapter.RecyclerViewAdapter;
 import com.xh.play.R;
-import com.xh.play.adapter.RecyclerViewAdapter;
-import com.xh.play.adapter.tag.ViewHolder;
+import com.xh.play.ViewHolder;
 import com.xh.play.entities.Tap;
 
 public class TabAdapter extends RecyclerViewAdapter<Tap> {

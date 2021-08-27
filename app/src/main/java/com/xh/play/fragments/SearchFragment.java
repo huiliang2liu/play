@@ -5,14 +5,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.xh.base.adapter.RecyclerViewAdapter;
+import com.xh.base.thread.PoolManager;
+import com.xh.base.widget.RecyclerView;
+import com.xh.paser.Detial;
+import com.xh.paser.IPlatform;
 import com.xh.play.R;
 import com.xh.play.activitys.PlayActivity;
-import com.xh.play.adapter.RecyclerViewAdapter;
 import com.xh.play.adapters.ChildAdapter;
-import com.xh.play.entities.Detial;
-import com.xh.play.platforms.IPlatform;
-import com.xh.play.thread.PoolManager;
-import com.xh.play.widget.RecyclerView;
+
 
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class SearchFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position, long id) {
                 Intent intent =new Intent(getContext(), PlayActivity.class);
-                intent.putExtra(PlayActivity.PLATFORMS,platform);
+                intent.putExtra(PlayActivity.PLATFORMS,application.platforms.indexOf(platform));
                 intent.putExtra(PlayActivity.DETAIL,adapter.getItem(position));
                 startActivity(intent);
             }

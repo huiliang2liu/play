@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_height="match_parent">
 
-    <com.xh.play.widget.RecyclerView
+    <com.xh.base.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="50dp"
         app:direction="horizontal"
@@ -16,7 +16,7 @@
         android:layout_height="2dp"
         android:background="#f00"/>
 
-    <com.xh.play.widget.ViewPager
+    <com.xh.base.widget.ViewPager
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:scroll="false"

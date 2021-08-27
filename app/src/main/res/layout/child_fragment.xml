@@ -14,7 +14,7 @@
         android:textSize="35sp"
         android:id="@+id/child_fragment_tv"
         android:text="获取title失败"/>
-    <com.xh.play.widget.RecyclerView
+    <com.xh.base.widget.RecyclerView
         android:layout_width="match_parent"
         app:line="1dp"
         app:lineColor="@color/color1"
@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/color1"/>
-    <com.xh.play.widget.ViewPager
+    <com.xh.base.widget.ViewPager
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

@@ -14,17 +14,19 @@
         android:textSize="35sp"
         android:id="@+id/activity_platform_tv"
         android:text="获取title失败"/>
-    <com.xh.play.widget.ViewPager
+    <com.xh.base.widget.ViewPager
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:scroll="false"
         android:id="@+id/activity_platform_vp"
         android:layout_weight="1"/>
 
-    <LinearLayout
+    <com.xh.base.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:orientation="horizontal"
-        android:id="@+id/activity_platform_ll"/>
+        app:lineColor="#f00"
+        app:line="1dp"
+        app:direction="horizontal"
+        android:id="@+id/activity_platform_rv"/>
 
 </LinearLayout>

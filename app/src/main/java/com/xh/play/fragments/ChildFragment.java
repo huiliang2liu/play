@@ -4,17 +4,17 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
+import com.xh.base.adapter.FragmentAdapter;
+import com.xh.base.adapter.RecyclerViewAdapter;
+import com.xh.base.thread.PoolManager;
+import com.xh.base.widget.RecyclerView;
+import com.xh.base.widget.ViewPager;
+import com.xh.paser.IPlatform;
+import com.xh.paser.Title;
 import com.xh.play.R;
-import com.xh.play.adapter.FragmentAdapter;
-import com.xh.play.adapter.RecyclerViewAdapter;
-import com.xh.play.adapter.tag.ViewHolder;
+import com.xh.play.ViewHolder;
 import com.xh.play.adapters.TextViewAdapter;
 import com.xh.play.entities.TextViewData;
-import com.xh.play.entities.Title;
-import com.xh.play.platforms.IPlatform;
-import com.xh.play.thread.PoolManager;
-import com.xh.play.widget.RecyclerView;
-import com.xh.play.widget.ViewPager;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.xh.play.widget.RecyclerView
+    <com.xh.base.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="50dp"
         app:direction="horizontal"
@@ -18,7 +18,7 @@
         android:background="@color/color1"/>
 
 
-    <com.xh.play.widget.RecyclerView
+    <com.xh.base.widget.RecyclerView
         android:id="@+id/fragment_home_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

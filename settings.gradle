@@ -1,2 +1,11 @@
+include ':movies'
+include ':paser'
+include ':media'
+include ':image'
+include ':cling'
+include ':base'
+include ':keepAlive'
 include ':app'
+include ':httpLibrary'
+include ':httpservicelibrary'
 rootProject.name = "Play"

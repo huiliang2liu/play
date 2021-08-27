@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:background="#0f0"
+        android:textColor="#f00"
+        android:textSize="15sp"
+        android:text="加载更多"
+        android:id="@+id/fragment_child_tv"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragment_child_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

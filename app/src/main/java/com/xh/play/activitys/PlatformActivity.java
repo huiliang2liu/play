@@ -10,15 +10,18 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.xh.base.adapter.FragmentAdapter;
+import com.xh.base.adapter.RecyclerViewAdapter;
+import com.xh.base.thread.PoolManager;
+import com.xh.base.widget.RecyclerView;
+import com.xh.base.widget.ViewPager;
+import com.xh.paser.IPlatform;
+import com.xh.paser.Title;
 import com.xh.play.R;
-import com.xh.play.adapter.FragmentAdapter;
+import com.xh.play.adapters.TabAdapter;
 import com.xh.play.entities.Tap;
-import com.xh.play.entities.Title;
 import com.xh.play.fragments.ChildFragment;
 import com.xh.play.fragments.SearchFragment;
-import com.xh.play.platforms.IPlatform;
-import com.xh.play.thread.PoolManager;
-import com.xh.play.widget.ViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,26 +33,42 @@ import androidx.fragment.app.FragmentActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PlatformActivity extends FragmentActivity implements View.OnClickListener {
+public class PlatformActivity extends BaseActivity {
     public static final String PLATFORM = "platform";
     public static final String TAG = "PlatformActivity";
     @BindView(R.id.activity_platform_vp)
     ViewPager viewPager;
-    @BindView(R.id.activity_platform_ll)
-    LinearLayout layout;
+    @BindView(R.id.activity_platform_rv)
+    RecyclerView recyclerView;
     @BindView(R.id.activity_platform_tv)
     TextView textView;
-    List<TextView> buttons = new ArrayList<>();
     IPlatform platform;
     private FragmentAdapter adapter;
+    private TabAdapter tabAdapter;
+
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        setContentView(R.layout.activity_platform);
-        ButterKnife.bind(this);
-        platform = (IPlatform) getIntent().getSerializableExtra(PLATFORM);
+    protected void bindData() {
+        super.bindData();
+        platform = application.platforms.get(getIntent().getIntExtra(PLATFORM, 0));
+        tabAdapter = new TabAdapter(recyclerView);
+        tabAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position, long id) {
+                int select = 0;
+                for (int i = 0; i < tabAdapter.getCount(); i++) {
+                    if (tabAdapter.getItem(i).select) {
+                        select = i;
+                        break;
+                    }
+                }
+                tabAdapter.getItem(select).select = false;
+                tabAdapter.getItem(position).select = true;
+                tabAdapter.notifyDataSetChanged(select);
+                tabAdapter.notifyDataSetChanged(position);
+                viewPager.setCurrentItem(position, false);
+            }
+        });
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,6 +77,11 @@ public class PlatformActivity extends FragmentActivity implements View.OnClickLi
             }
         });
         getTitles();
+    }
+
+    @Override
+    protected int layout() {
+        return R.layout.activity_platform;
     }
 
     private void getTitles() {
@@ -78,41 +102,22 @@ public class PlatformActivity extends FragmentActivity implements View.OnClickLi
                 PoolManager.runUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        List<Tap> taps = new ArrayList<>();
                         List<Fragment> fragments = new ArrayList<>();
                         for (Title title : titles) {
-                            TextView tv = new TextView(PlatformActivity.this);
-                            tv.setGravity(Gravity.CENTER);
-                            tv.setTextSize(15);
-                            tv.setText(title.title);
-                            tv.setBackgroundColor(Color.WHITE);
-                            tv.setTextColor(Color.BLACK);
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                            layoutParams.weight = 1;
-                            tv.setLayoutParams(layoutParams);
-                            layout.addView(tv);
-                            buttons.add(tv);
+                            Tap tap = new Tap();
+                            tap.select = false;
+                            tap.title = title.title;
+                            taps.add(tap);
                             fragments.add(new ChildFragment().setPlatform(platform).setUrl(title.url));
                         }
-                        {
-                            TextView tv = new TextView(PlatformActivity.this);
-                            tv.setGravity(Gravity.CENTER);
-                            tv.setTextSize(15);
-                            tv.setText("搜索");
-                            tv.setBackgroundColor(Color.WHITE);
-                            tv.setTextColor(Color.BLACK);
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                            layoutParams.weight = 1;
-                            tv.setLayoutParams(layoutParams);
-                            layout.addView(tv);
-                            buttons.add(tv);
-                            fragments.add(new SearchFragment().setPlatform(platform));
-                        }
-                        for (TextView tv : buttons) {
-                            tv.setOnClickListener(PlatformActivity.this);
-                        }
-                        TextView tv = buttons.get(0);
-                        tv.setBackgroundColor(Color.RED);
-                        tv.setTextColor(Color.WHITE);
+                        Tap tap = new Tap();
+                        tap.select = false;
+                        tap.title = "搜索";
+                        taps.add(tap);
+                        taps.get(0).select = true;
+                        tabAdapter.addItem(taps);
+                        fragments.add(new SearchFragment().setPlatform(platform));
                         adapter = new FragmentAdapter(PlatformActivity.this, fragments);
                         viewPager.setAdapter(adapter);
                     }
@@ -121,15 +126,4 @@ public class PlatformActivity extends FragmentActivity implements View.OnClickLi
         });
     }
 
-    @Override
-    public void onClick(View view) {
-        for (TextView tv : buttons) {
-            tv.setBackgroundColor(Color.WHITE);
-            tv.setTextColor(Color.BLACK);
-        }
-        TextView tv = (TextView) view;
-        tv.setBackgroundColor(Color.RED);
-        tv.setTextColor(Color.WHITE);
-        viewPager.setCurrentItem(buttons.indexOf(tv), false);
-    }
 }

@@ -21,18 +21,19 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.xh.base.adapter.RecyclerViewAdapter;
+import com.xh.base.animation.AnimatorFactory;
+import com.xh.base.animation.ViewEmbellish;
+import com.xh.base.thread.PoolManager;
+import com.xh.base.widget.RecyclerView;
+import com.xh.media.MediaListener;
+import com.xh.media.widget.VideoView;
+import com.xh.paser.Detial;
+import com.xh.paser.IPlatform;
+import com.xh.play.PlayApplication;
 import com.xh.play.R;
-import com.xh.play.adapter.RecyclerViewAdapter;
 import com.xh.play.adapters.TabAdapter;
-import com.xh.play.animation.AnimatorFactory;
-import com.xh.play.animation.ViewEmbellish;
-import com.xh.play.entities.Detial;
 import com.xh.play.entities.Tap;
-import com.xh.play.media.MediaListener;
-import com.xh.play.media.widget.VideoView;
-import com.xh.play.platforms.IPlatform;
-import com.xh.play.thread.PoolManager;
-import com.xh.play.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,10 +96,10 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                 public void run() {
                     if (duration <= 0)
                         return;
-                    long position = videoView.getCurrentPosition();
-                    int progress = (int) (position * 100 / duration);
-                    playSb.setProgress(progress);
-                    playTime.setText(timeFormat(position));
+//                    long position = videoView.getCurrentPosition();
+//                    int progress = (int) (position * 100 / duration);
+//                    playSb.setProgress(progress);
+//                    playTime.setText(timeFormat(position));
                 }
             });
         }
@@ -145,12 +146,14 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         if (playUrl != null) {
             textView.setText(playUrl.title);
             videoView.play(playUrl.href);
-            stateLL.setVisibility(View.GONE);
+            stateLL.setVisibility(View.VISIBLE);
+            hide();
         } else {
             stateLL.setVisibility(View.VISIBLE);
             detial = getIntent().getParcelableExtra(DETAIL);
             textView.setText(detial.name);
-            platform = (IPlatform) getIntent().getSerializableExtra(PLATFORMS);
+            PlayApplication application = (PlayApplication) getApplication();
+            platform = application.platforms.get(getIntent().getIntExtra(PLATFORMS, 0));
             tabAdapter = new TabAdapter(recyclerView);
             tabAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
                 @Override
@@ -188,7 +191,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
             @Override
             public boolean onInfo(int what, int extra) {
                 Log.e(TAG, String.format("what:%s,extra:%s", what, extra));
-                if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START && platform != null) {
+                if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
                     duration = videoView.getDuration();
                     Log.e(TAG, "duration:" + duration);
                     PoolManager.runUiThread(new Runnable() {
@@ -298,12 +301,12 @@ public class PlayActivity extends Activity implements View.OnClickListener {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (platform != null) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                show();
-            } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)
-                hide();
-        }
+//        if (platform != null) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            show();
+        } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)
+            hide();
+//        }
         super.dispatchTouchEvent(event);
         return true;
     }
@@ -340,8 +343,8 @@ public class PlayActivity extends Activity implements View.OnClickListener {
             });
             objectAnimators.add(objectAnimator);
             objectAnimators.add(AnimatorFactory.translationX(speedLlEmbellish, 300, 0, moveHeight));
-            if (platform != null)
-                objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, 0, moveHeight));
+//            if (platform != null)
+            objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, 0, moveHeight));
             AnimatorFactory.startAnimation(objectAnimators);
         }
     };
@@ -396,8 +399,8 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         });
         objectAnimators.add(objectAnimator);
         objectAnimators.add(AnimatorFactory.translationX(speedLlEmbellish, 300, moveHeight, 0));
-        if (platform != null)
-            objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, moveHeight, 0));
+//        if (platform != null)
+        objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, moveHeight, 0));
         AnimatorFactory.startAnimation(objectAnimators);
     }
 
@@ -457,4 +460,5 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         speed.setBackgroundColor(Color.WHITE);
         videoView.setSpeed(Float.valueOf(speed.getText().toString()));
     }
+
 }

@@ -5,16 +5,22 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.xh.base.adapter.FragmentAdapter;
+import com.xh.base.widget.ViewPager;
+import com.xh.paser.IVip;
 import com.xh.play.R;
-import com.xh.play.adapter.FragmentAdapter;
 import com.xh.play.fragments.LiveFragment;
 import com.xh.play.fragments.MoveFragment;
-import com.xh.play.widget.ViewPager;
+
 
 import java.util.ArrayList;
 import java.util.List;

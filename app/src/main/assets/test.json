@@ -1,0 +1,10 @@
+{
+  "host": "http://10.230.106.27:8000",
+  "packages": ["com.xh.play.entities"],
+  "urls": [
+    {"url":"http://ip-api.com/json?lang=zh-CN","clazz": "IP", "method": "getIP","isPost": false},
+    {"url":"app/update","clazz": "Update","isPost": false},
+    {"url":"app/splash","clazz": "Splash"},
+    {"url":"app/movies_plug","clazz": "Movies"}
+  ]
+}

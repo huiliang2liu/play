@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Play">
         <activity
-            android:name=".activitys.MainActivity"
+            android:name=".activitys.SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activitys.MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activitys.PlayActivity"
             android:screenOrientation="landscape" />
@@ -29,6 +31,7 @@
         <activity
             android:name=".activitys.PlatformActivity"
             android:screenOrientation="portrait" />
+        <meta-data android:name="http_service_response" android:value="com.xh.play.HttpServer"/>
     </application>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />

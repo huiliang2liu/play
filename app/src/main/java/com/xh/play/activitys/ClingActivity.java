@@ -5,17 +5,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.dlna.cling.ClingDeviceManagerImpl;
-import com.dlna.iface.IControl;
 import com.dlna.iface.IPlayControl;
 import com.dlna.listener.ControlListener;
 import com.dlna.listener.DeviceChangeListener;
 import com.dlna.util.DeviceManager;
+import com.xh.base.adapter.RecyclerViewAdapter;
+import com.xh.base.widget.RecyclerView;
 import com.xh.play.R;
-import com.xh.play.adapter.RecyclerViewAdapter;
 import com.xh.play.adapters.TabAdapter;
 import com.xh.play.entities.Tap;
-import com.xh.play.widget.RecyclerView;
 
 import java.util.HashSet;
 import java.util.List;

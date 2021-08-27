@@ -40,12 +40,11 @@
         android:layout_marginBottom="50dp"
         android:background="@color/color3" />
 
-    <com.xh.play.widget.ViewPager
+    <com.xh.base.widget.ViewPager
         android:id="@+id/main_vp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="50dp"
-        app:scroll="false"></com.xh.play.widget.ViewPager>
-
+        app:scroll="false"></com.xh.base.widget.ViewPager>
 
 </FrameLayout>

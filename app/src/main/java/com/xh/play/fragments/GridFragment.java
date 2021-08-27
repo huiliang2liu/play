@@ -8,14 +8,14 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.xh.base.adapter.RecyclerViewAdapter;
+import com.xh.base.thread.PoolManager;
+import com.xh.base.widget.RecyclerView;
+import com.xh.paser.IPlatform;
+import com.xh.paser.ListMove;
 import com.xh.play.R;
 import com.xh.play.activitys.PlayActivity;
-import com.xh.play.adapter.RecyclerViewAdapter;
 import com.xh.play.adapters.ChildAdapter;
-import com.xh.play.entities.ListMove;
-import com.xh.play.platforms.IPlatform;
-import com.xh.play.thread.PoolManager;
-import com.xh.play.widget.RecyclerView;
 
 import androidx.annotation.NonNull;
 
@@ -56,7 +56,7 @@ public class GridFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position, long id) {
                 Intent intent = new Intent(getContext(), PlayActivity.class);
-                intent.putExtra(PlayActivity.PLATFORMS, platform);
+                intent.putExtra(PlayActivity.PLATFORMS, application.platforms.indexOf(platform));
                 intent.putExtra(PlayActivity.DETAIL, adapter.getItem(position));
                 startActivity(intent);
             }
@@ -93,6 +93,8 @@ public class GridFragment extends BaseFragment {
                 PoolManager.runUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (smartRefreshLayout == null)
+                            return;
                         smartRefreshLayout.setEnableLoadMore(next != null && !next.isEmpty());
                         if (loadMore) {
                             smartRefreshLayout.finishLoadMore();

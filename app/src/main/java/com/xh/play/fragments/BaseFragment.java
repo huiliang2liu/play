@@ -10,8 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.xh.play.HttpManager;
 import com.xh.play.PlayApplication;
-import com.xh.play.image.IImageLoad;
+import com.xh.image.IImageLoad;
+
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 
 public abstract class BaseFragment extends Fragment {
@@ -19,11 +23,16 @@ public abstract class BaseFragment extends Fragment {
     private boolean visible = false;
     protected View view;
     protected IImageLoad imageLoad;
+    protected PlayApplication application;
+    protected HttpManager httpManager;
+    private Unbinder unbinder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imageLoad = ((PlayApplication) getContext().getApplicationContext()).imageLoad;
+        application = (PlayApplication) getContext().getApplicationContext();
+        imageLoad = application.imageLoad;
+        httpManager = application.httpManager;
     }
 
     @Nullable
@@ -31,6 +40,7 @@ public abstract class BaseFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(layout(), null);
+            unbinder = ButterKnife.bind(this,view);
             bindView();
             if (visible)
                 visible();
@@ -81,5 +91,11 @@ public abstract class BaseFragment extends Fragment {
 
     protected void inVisible() {
         Log.e(TAG, "invisible");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

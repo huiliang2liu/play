@@ -2,9 +2,9 @@ package com.xh.play.adapters;
 
 import android.widget.TextView;
 
+import com.xh.base.adapter.RecyclerViewAdapter;
 import com.xh.play.R;
-import com.xh.play.adapter.RecyclerViewAdapter;
-import com.xh.play.adapter.tag.ViewHolder;
+import com.xh.play.ViewHolder;
 import com.xh.play.entities.TextViewData;
 
 import androidx.recyclerview.widget.RecyclerView;

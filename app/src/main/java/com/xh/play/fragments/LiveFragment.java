@@ -3,19 +3,15 @@ package com.xh.play.fragments;
 import android.content.Intent;
 import android.view.View;
 
+import com.xh.base.adapter.RecyclerViewAdapter;
+import com.xh.base.thread.PoolManager;
+import com.xh.base.widget.RecyclerView;
 import com.xh.play.PlayApplication;
 import com.xh.play.R;
 import com.xh.play.activitys.PlayActivity;
-import com.xh.play.adapter.RecyclerViewAdapter;
 import com.xh.play.adapters.LiveAdapter;
 import com.xh.play.adapters.TabAdapter;
-import com.xh.play.entities.Detial;
-import com.xh.play.entities.Live;
 import com.xh.play.entities.Tap;
-import com.xh.play.platforms.DianYingMao;
-import com.xh.play.platforms.IPlatform;
-import com.xh.play.thread.PoolManager;
-import com.xh.play.widget.RecyclerView;
 
 import java.util.List;
 
@@ -31,9 +27,7 @@ public class LiveFragment extends BaseFragment {
     @BindView(R.id.fragment_home_yab)
     RecyclerView tabRV;
     TabAdapter tabAdapter;
-    DianYingMao dianYingMao;
     int tab = 0;
-    private List<Live> lives;
 
 
     @Override
@@ -50,46 +44,9 @@ public class LiveFragment extends BaseFragment {
                 tabAdapter.getItem(tab).select = true;
                 tabAdapter.notifyDataSetChanged();
                 adapter.clean();
-                adapter.addItem(lives.get(tab).detailPlayUrls);
             }
         });
         PlayApplication application = (PlayApplication) getContext().getApplicationContext();
-        for (IPlatform platforms : application.platformList)
-            if (platforms instanceof DianYingMao) {
-                dianYingMao = (DianYingMao) platforms;
-                break;
-            }
-        adapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position, long id) {
-                Detial.DetailPlayUrl detial = adapter.getItem(position);
-                Intent intent = new Intent(getContext(), PlayActivity.class);
-                intent.putExtra(PlayActivity.DETAIL_PLAY_URL, detial);
-                startActivity(intent);
-            }
-        });
-        PoolManager.io(new Runnable() {
-            @Override
-            public void run() {
-                lives = dianYingMao.live();
-                PoolManager.runUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < lives.size(); i++) {
-                            Live title = lives.get(i);
-                            Tap tap = new Tap();
-                            tap.select = i == tab;
-                            tap.title = title.name;
-                            tabAdapter.addItem(tap);
-                            if (tap.select) {
-                                adapter.clean();
-                                adapter.addItem(title.detailPlayUrls);
-                            }
-                        }
-                    }
-                });
-            }
-        });
     }
 
 

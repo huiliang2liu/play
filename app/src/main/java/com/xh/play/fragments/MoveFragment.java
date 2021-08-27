@@ -3,14 +3,14 @@ package com.xh.play.fragments;
 import android.content.Intent;
 import android.view.View;
 
+import com.xh.base.adapter.RecyclerViewAdapter;
+import com.xh.base.widget.RecyclerView;
+import com.xh.paser.IPlatform;
 import com.xh.play.PlayApplication;
 import com.xh.play.R;
 import com.xh.play.activitys.PlatformActivity;
-import com.xh.play.adapter.RecyclerViewAdapter;
 import com.xh.play.adapters.TextViewAdapter;
 import com.xh.play.entities.TextViewData;
-import com.xh.play.platforms.IPlatform;
-import com.xh.play.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,10 @@ public class MoveFragment extends BaseFragment implements RecyclerViewAdapter.On
         adapter = new TextViewAdapter(recyclerView);
         adapter.setOnItemClickListener(this);
         PlayApplication app = (PlayApplication) getContext().getApplicationContext();
-        List<TextViewData> datas =new ArrayList();
-        for (IPlatform platforms : app.platformList) {
+        List<TextViewData> datas = new ArrayList();
+        if (app.platforms == null)
+            return;
+        for (IPlatform platforms : app.platforms) {
             Data data = new Data();
             data.name = platforms.name();
             data.platform = platforms;
@@ -47,8 +49,8 @@ public class MoveFragment extends BaseFragment implements RecyclerViewAdapter.On
 
     @Override
     public void onItemClick(View view, int position, long id) {
-        Intent intent =new Intent(getContext(), PlatformActivity.class);
-        intent.putExtra(PlatformActivity.PLATFORM,((Data)adapter.getItem(position)).platform);
+        Intent intent = new Intent(getContext(), PlatformActivity.class);
+        intent.putExtra(PlatformActivity.PLATFORM, application.platforms.indexOf(((Data) adapter.getItem(position)).platform));
         startActivity(intent);
     }
 

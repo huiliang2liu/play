@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ViewPager">
+        <attr name="scroll" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="RecyclerView">
+        <attr name="direction" format="enum">
+            <enum name="vertical" value="0" />
+            <enum name="horizontal" value="1" />
+            <enum name="gridVertical" value="2" />
+            <enum name="gridHorizontal" value="3" />
+            <enum name="staggeredVertical" value="4" />
+            <enum name="staggeredHorizontal" value="5" />
+            <enum name="card" value="6" />
+            <enum name="looper" value="7" />
+        </attr>
+        <attr name="count" format="integer" />
+        <attr name="line" format="dimension" />
+        <attr name="lineHeight" format="dimension" />
+        <attr name="lineWidth" format="dimension" />
+        <attr name="lineColor" format="color" />
+        <attr name="lineVerticalColor" format="reference" />
+        <attr name="lineHorizontalColor" format="reference" />
+    </declare-styleable>
+</resources>

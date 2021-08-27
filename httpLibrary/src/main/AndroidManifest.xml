@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.a">
+
+    <application
+    android:networkSecurityConfig="@xml/network_security_config">
+    <!--        9.0使用Apache HTTP client适配-->
+    <uses-library
+        android:name="org.apache.http.legacy"
+        android:required="false" />
+</application><uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+<uses-permission android:name="android.permission.INTERNET" /></manifest>

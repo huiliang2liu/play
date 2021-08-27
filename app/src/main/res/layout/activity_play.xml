@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <com.xh.play.media.widget.VideoView
+        <com.xh.media.widget.VideoView
             android:id="@+id/activity_play_vv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -56,7 +56,7 @@
             android:background="#50000000"
             android:id="@+id/activity_play_ll"
             android:layout_height="50dp">
-            <com.xh.play.widget.RecyclerView
+            <com.xh.base.widget.RecyclerView
                 android:layout_width="300dp"
                 app:direction="horizontal"
                 app:line="2dp"
