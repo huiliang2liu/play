@@ -2,6 +2,7 @@ package com.xh.movies.platforms;
 
 import android.util.Log;
 
+import com.xh.movies.Base64;
 import com.xh.movies.PlatformsManager;
 import com.xh.movies.Util;
 import com.xh.paser.AbsPlatform;
@@ -243,6 +244,7 @@ public class TenCent extends AbsPlatform {
 
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
+//        return String.format("http://127.0.0.1:%s/movie?url=%s", PlatformsManager.PORT, new String(Base64.encode(playUrl.href.getBytes(), 0)));
         IVip vip = PlatformsManager.vip;
         if (vip == null)
             return "";
@@ -275,7 +277,7 @@ public class TenCent extends AbsPlatform {
             connection.setConnectTimeout(5000);
             connection.setDoOutput(false);
             connection.setUseCaches(false);
-            connection.setRequestProperty("Content-Type","application/x-www-from-urlencoded");
+            connection.setRequestProperty("Content-Type", "application/x-www-from-urlencoded");
             connection.setRequestMethod("GET");
             connection.setDoInput(true);
             connection.connect();
@@ -299,10 +301,10 @@ public class TenCent extends AbsPlatform {
                 e.printStackTrace();
             }
             List<JXNode> divs = jx.selN("//div[@class='wrapper_main']/div/div");
-            Log.e("=====",""+divs.size());
+            Log.e("=====", "" + divs.size());
             for (JXNode div : divs) {
                 List<JXNode> as = div.sel("div[@class='_infos']/div/a");
-                if(as.size()<=0)
+                if (as.size() <= 0)
                     continue;
                 JXNode a = as.get(0);
                 Element element = a.asElement();
@@ -354,5 +356,10 @@ public class TenCent extends AbsPlatform {
             e.printStackTrace();
         }
         return detials;
+    }
+
+    @Override
+    public boolean hasVip() {
+        return true;
     }
 }

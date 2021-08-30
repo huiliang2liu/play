@@ -2,6 +2,7 @@ package com.xh.movies.platforms;
 
 import android.util.Log;
 
+import com.xh.movies.Base64;
 import com.xh.movies.PlatformsManager;
 import com.xh.movies.Util;
 import com.xh.paser.AbsPlatform;
@@ -853,6 +854,7 @@ public class YouKu extends AbsPlatform {
 
     @Override
     public boolean playDetail(Detial detial) {
+        List<IVip> vips = PlatformsManager.vips;
         List<Detial.DetailPlayUrl> detailPlayUrls = new ArrayList<>();
         Detial.DetailPlayUrl playUrl = new Detial.DetailPlayUrl();
         playUrl.title = detial.name;
@@ -868,8 +870,8 @@ public class YouKu extends AbsPlatform {
 
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
-        Log.e("playda", playUrl.href);
         IVip vip = PlatformsManager.vip;
+        Log.e("playda", playUrl.href);
         if (vip == null)
             return "";
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -894,5 +896,10 @@ public class YouKu extends AbsPlatform {
     @Override
     public List<Detial> search(String text) {
         return null;
+    }
+
+    @Override
+    public boolean hasVip() {
+        return true;
     }
 }

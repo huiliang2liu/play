@@ -169,12 +169,7 @@ public class SplashActivity extends BaseActivity {
                         optimizedDirectory, null, getClassLoader());
                 try {
                     Class clazz = baseDexClassLoader.loadClass("com.xh.movies.PlatformsManager");
-                    Method method = clazz.getDeclaredMethod("init", Context.class);
-                    method.invoke(null, getApplication());
-                    method = clazz.getDeclaredMethod("getPlatforms");
-                    application.platforms = (List<IPlatform>) method.invoke(null);
-                    method = clazz.getDeclaredMethod("getVip");
-                    application.vip = (IVip) method.invoke(null);
+                    application.setPlatformsManager(clazz);
                 } catch (Exception e) {
                     e.printStackTrace();
                     PoolManager.runUiThread(new Runnable() {

@@ -2,6 +2,7 @@ package com.xh.movies.platforms;
 
 import android.util.Log;
 
+import com.xh.movies.Base64;
 import com.xh.movies.PlatformsManager;
 import com.xh.movies.Util;
 import com.xh.paser.AbsPlatform;
@@ -303,6 +304,7 @@ public class IQiYi extends AbsPlatform {
 
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
+//        return String.format("http://127.0.0.1:%s/movie?url=%s", PlatformsManager.PORT, new String(Base64.encode(playUrl.href.getBytes(), 0)));
         Log.e("playda", playUrl.href);
         IVip vip = PlatformsManager.vip;
         if (vip == null)
@@ -374,5 +376,10 @@ public class IQiYi extends AbsPlatform {
             e.printStackTrace();
         }
         return url;
+    }
+
+    @Override
+    public boolean hasVip() {
+        return true;
     }
 }

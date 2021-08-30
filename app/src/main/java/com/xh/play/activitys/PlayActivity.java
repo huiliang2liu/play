@@ -30,6 +30,8 @@ import com.xh.media.MediaListener;
 import com.xh.media.widget.VideoView;
 import com.xh.paser.Detial;
 import com.xh.paser.IPlatform;
+import com.xh.paser.IVip;
+import com.xh.paser.VipParsListener;
 import com.xh.play.PlayApplication;
 import com.xh.play.R;
 import com.xh.play.adapters.TabAdapter;
@@ -51,6 +53,8 @@ public class PlayActivity extends Activity implements View.OnClickListener {
     VideoView videoView;
     @BindView(R.id.activity_play_rv)
     RecyclerView recyclerView;
+    @BindView(R.id.activity_play_parser)
+    RecyclerView parser;
     @BindView(R.id.activity_play_ll)
     FrameLayout frameLayout;
     @BindView(R.id.activity_play_tv)
@@ -77,6 +81,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
     TextView speed20;
     TextView speed;
     TabAdapter tabAdapter;
+    TabAdapter parserAdapter;
     IPlatform platform;
     Detial detial;
     private int index = 0;
@@ -85,7 +90,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
     private boolean show = true;
     private float moveHeight = 300;
     ViewEmbellish stateLLEmbllish;
-    ViewEmbellish rvEmbellish;
     ViewEmbellish speedLlEmbellish;
     private Future future;
     Runnable timeRunnable = new Runnable() {
@@ -96,10 +100,10 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                 public void run() {
                     if (duration <= 0)
                         return;
-//                    long position = videoView.getCurrentPosition();
-//                    int progress = (int) (position * 100 / duration);
-//                    playSb.setProgress(progress);
-//                    playTime.setText(timeFormat(position));
+                    long position = videoView.getCurrentPosition();
+                    int progress = (int) (position * 100 / duration);
+                    playSb.setProgress(progress);
+                    playTime.setText(timeFormat(position));
                 }
             });
         }
@@ -131,7 +135,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
             }
         });
         stateLLEmbllish = new ViewEmbellish(stateLL);
-        rvEmbellish = new ViewEmbellish(recyclerView);
         speedLlEmbellish = new ViewEmbellish(speedLl);
         findViewById(R.id.activity_play_cling).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,6 +157,47 @@ public class PlayActivity extends Activity implements View.OnClickListener {
             textView.setText(detial.name);
             PlayApplication application = (PlayApplication) getApplication();
             platform = application.platforms.get(getIntent().getIntExtra(PLATFORMS, 0));
+            if (platform.hasVip()) {
+                parserAdapter = new TabAdapter(parser);
+                List<MyTap> taps = new ArrayList<>();
+                for (IVip vip : application.vips) {
+                    MyTap myTap = new MyTap();
+                    myTap.title = vip.name();
+                    taps.add(myTap);
+                }
+//                taps.get(0).select = true;
+                parserAdapter.addItem(taps);
+            }
+            parserAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position, long id) {
+                    for (int i = 0; i < parserAdapter.getCount(); i++) {
+                        if (parserAdapter.getItem(i).select) {
+                            parserAdapter.getItem(i).select = false;
+                        }
+                    }
+                    parserAdapter.getItem(position).select = true;
+                    parserAdapter.notifyDataSetChanged();
+                    for (IVip vip : application.vips) {
+                        if (vip.name().equals(parserAdapter.getItem(position).title)) {
+                            vip.parse(((MyTap) tabAdapter.getItem(index)).url.href, new VipParsListener() {
+                                @Override
+                                public void onListener(String url) {
+                                    PoolManager.runUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (url == null || url.isEmpty())
+                                                return;
+                                            videoView.play(url);
+                                        }
+                                    });
+                                }
+                            });
+                            break;
+                        }
+                    }
+                }
+            });
             tabAdapter = new TabAdapter(recyclerView);
             tabAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
                 @Override
@@ -319,7 +363,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
             animatorStart = true;
             show = false;
             List<ObjectAnimator> objectAnimators = new ArrayList<>();
-            ObjectAnimator objectAnimator = AnimatorFactory.translationY(rvEmbellish, 300, 0, -moveHeight);
+            ObjectAnimator objectAnimator = AnimatorFactory.translationX(speedLlEmbellish, 300, 0, 1500);
             objectAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -342,8 +386,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                 }
             });
             objectAnimators.add(objectAnimator);
-            objectAnimators.add(AnimatorFactory.translationX(speedLlEmbellish, 300, 0, moveHeight));
-//            if (platform != null)
+//            objectAnimators.add(AnimatorFactory.translationX(speedLlEmbellish, 300, 0, moveHeight));
             objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, 0, moveHeight));
             AnimatorFactory.startAnimation(objectAnimators);
         }
@@ -374,7 +417,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         animatorStart = true;
         show = true;
         List<ObjectAnimator> objectAnimators = new ArrayList<>();
-        ObjectAnimator objectAnimator = AnimatorFactory.translationY(rvEmbellish, 300, -moveHeight, 0);
+        ObjectAnimator objectAnimator = AnimatorFactory.translationX(speedLlEmbellish, 300, 1500, 0);
         objectAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -398,7 +441,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
             }
         });
         objectAnimators.add(objectAnimator);
-        objectAnimators.add(AnimatorFactory.translationX(speedLlEmbellish, 300, moveHeight, 0));
+//        objectAnimators.add(AnimatorFactory.translationX(speedLlEmbellish, 300, moveHeight, 0));
 //        if (platform != null)
         objectAnimators.add(AnimatorFactory.translationY(stateLLEmbllish, 300, moveHeight, 0));
         AnimatorFactory.startAnimation(objectAnimators);

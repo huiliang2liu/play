@@ -10,4 +10,9 @@ public abstract class AbsPlatform implements IPlatform {
         connection.timeout(10000);
         return connection;
     }
+
+    @Override
+    public boolean hasVip() {
+        return false;
+    }
 }

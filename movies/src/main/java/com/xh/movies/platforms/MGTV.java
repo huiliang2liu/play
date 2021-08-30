@@ -2,6 +2,7 @@ package com.xh.movies.platforms;
 
 import android.util.Log;
 
+import com.xh.movies.Base64;
 import com.xh.movies.PlatformsManager;
 import com.xh.movies.Util;
 import com.xh.paser.AbsPlatform;
@@ -117,27 +118,27 @@ public class MGTV extends AbsPlatform {
             map.put("综艺", titles);
         }
         {
-            List<Title> titles =new ArrayList<>();
-            titles.add(new Title("美食","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=97&sort=c1&callback=jsonp_1629953266089_6734"));
-            titles.add(new Title("文化","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=98&sort=c1&callback=jsonp_1629953310305_72288"));
-            titles.add(new Title("社会","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=99&sort=c1&callback=jsonp_1629953331250_67689"));
-            titles.add(new Title("历史","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=100&sort=c1&callback=jsonp_1629953350201_56435"));
-            titles.add(new Title("军事","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=101&sort=c1&callback=jsonp_1629953373090_3374"));
-            titles.add(new Title("人物","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=102&sort=c1&callback=jsonp_1629953393354_47481"));
-            titles.add(new Title("探索","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=103&sort=c1&callback=jsonp_1629953418665_41016"));
-            titles.add(new Title("自然","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=104&sort=c1&callback=jsonp_1629953446426_39091"));
-            titles.add(new Title("其他","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=105&sort=c1&callback=jsonp_1629953472466_57986"));
-            map.put("纪录片",titles);
+            List<Title> titles = new ArrayList<>();
+            titles.add(new Title("美食", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=97&sort=c1&callback=jsonp_1629953266089_6734"));
+            titles.add(new Title("文化", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=98&sort=c1&callback=jsonp_1629953310305_72288"));
+            titles.add(new Title("社会", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=99&sort=c1&callback=jsonp_1629953331250_67689"));
+            titles.add(new Title("历史", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=100&sort=c1&callback=jsonp_1629953350201_56435"));
+            titles.add(new Title("军事", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=101&sort=c1&callback=jsonp_1629953373090_3374"));
+            titles.add(new Title("人物", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=102&sort=c1&callback=jsonp_1629953393354_47481"));
+            titles.add(new Title("探索", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=103&sort=c1&callback=jsonp_1629953418665_41016"));
+            titles.add(new Title("自然", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=104&sort=c1&callback=jsonp_1629953446426_39091"));
+            titles.add(new Title("其他", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=51&pn=1&pc=80&hudong=1&_support=10000000&kind=105&sort=c1&callback=jsonp_1629953472466_57986"));
+            map.put("纪录片", titles);
         }
         {
-            List<Title> titles =new ArrayList<>();
-            titles.add(new Title("饭制","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=186&sort=c1&callback=jsonp_1629953535362_24054"));
-            titles.add(new Title("八卦","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=187&sort=c1&callback=jsonp_1629953559507_18662"));
-            titles.add(new Title("明星网红","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=185&sort=c1&callback=jsonp_1629953583211_80490"));
-            titles.add(new Title("时尚","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=190&sort=c1&callback=jsonp_1629953605450_24923"));
-            titles.add(new Title("综艺","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=189&sort=c1&callback=jsonp_1629953628602_61835"));
-            titles.add(new Title("影视剧","https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=188&sort=c1&callback=jsonp_1629953651834_25297"));
-            map.put("娱乐",titles);
+            List<Title> titles = new ArrayList<>();
+            titles.add(new Title("饭制", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=186&sort=c1&callback=jsonp_1629953535362_24054"));
+            titles.add(new Title("八卦", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=187&sort=c1&callback=jsonp_1629953559507_18662"));
+            titles.add(new Title("明星网红", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=185&sort=c1&callback=jsonp_1629953583211_80490"));
+            titles.add(new Title("时尚", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=190&sort=c1&callback=jsonp_1629953605450_24923"));
+            titles.add(new Title("综艺", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=189&sort=c1&callback=jsonp_1629953628602_61835"));
+            titles.add(new Title("影视剧", "https://pianku.api.mgtv.com/rider/list/pcweb/v3?platform=pcweb&channelId=113&pn=1&pc=80&hudong=1&_support=10000000&kind=188&sort=c1&callback=jsonp_1629953651834_25297"));
+            map.put("娱乐", titles);
         }
     }
 
@@ -169,7 +170,7 @@ public class MGTV extends AbsPlatform {
         if (text == null || text.isEmpty())
             return listMove;
         text = text.split("\\(")[1];
-        text.substring(0,text.length()-1);
+        text.substring(0, text.length() - 1);
         try {
             JSONObject jsonObject = new JSONObject(text);
             jsonObject = jsonObject.optJSONObject("data");
@@ -246,6 +247,7 @@ public class MGTV extends AbsPlatform {
 
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
+//        return String.format("http://127.0.0.1:%s/movie?url=%s", PlatformsManager.PORT, new String(Base64.encode(playUrl.href.getBytes(), 0)));
         Log.e("playda", playUrl.href);
         IVip vip = PlatformsManager.vip;
         if (vip == null)
@@ -272,5 +274,10 @@ public class MGTV extends AbsPlatform {
     @Override
     public List<Detial> search(String text) {
         return null;
+    }
+
+    @Override
+    public boolean hasVip() {
+        return true;
     }
 }

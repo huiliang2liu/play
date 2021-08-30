@@ -2,6 +2,7 @@ package com.xh.movies.platforms;
 
 import android.util.Log;
 
+import com.xh.movies.Base64;
 import com.xh.movies.PlatformsManager;
 import com.xh.movies.Util;
 import com.xh.paser.AbsPlatform;
@@ -134,11 +135,11 @@ public class PPTV extends AbsPlatform {
                 if (!text.contains("webcfg"))
                     continue;
                 text = text.trim();
-                Log.e(TAG,text);
+                Log.e(TAG, text);
                 text = text.split("webcfg\\s=\\s")[1];
-                Log.e(TAG,text);
+                Log.e(TAG, text);
                 text = text.split(";")[0];
-                Log.e(TAG,text);
+                Log.e(TAG, text);
                 text = text.trim();
                 JSONObject object = new JSONObject(text);
                 object = object.optJSONObject("playList");
@@ -176,6 +177,7 @@ public class PPTV extends AbsPlatform {
 
     @Override
     public String play(Detial.DetailPlayUrl playUrl) {
+//        return String.format("http://127.0.0.1:%s/movie?url=%s", PlatformsManager.PORT, new String(Base64.encode(playUrl.href.getBytes(), 0)));
         Log.e("playda", playUrl.href);
         IVip vip = PlatformsManager.vip;
         if (vip == null)
@@ -223,5 +225,10 @@ public class PPTV extends AbsPlatform {
             e.printStackTrace();
         }
         return detials;
+    }
+
+    @Override
+    public boolean hasVip() {
+        return true;
     }
 }

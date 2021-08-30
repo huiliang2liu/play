@@ -33,7 +33,7 @@ class Service extends HttpService {
             Class cl = Class.forName(context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString(H_S_R));
             if (HttpServiceResponse.class.isAssignableFrom(cl)) {
                 response = (HttpServiceResponse) cl.newInstance();
-                response.init(getIPAddress(context),port);
+                response.init(context,getIPAddress(context),port);
                 start();
             } else {
                 Log.d(TAG, "相应类型不对");
@@ -96,10 +96,10 @@ class Service extends HttpService {
             String method = session.getMethod().toString();
             Log.d(TAG, String.format("接收到请求：uri=%s,method=%s", uri, method));
             if ("GET".equals(method))
-                return response.get(context, uri, session.getHeaders(), session.getParms(), session);
+                return response.get(uri, session.getHeaders(), session.getParms(), session);
             if ("POST".equals(method))
-                return response.post(context, uri, session.getHeaders(), session.getParms(), session);
-            return response.other(context, method, uri, session.getHeaders(), session.getParms(), session);
+                return response.post(uri, session.getHeaders(), session.getParms(), session);
+            return response.other(method, uri, session.getHeaders(), session.getParms(), session);
         }
         return super.serve(session);
     }

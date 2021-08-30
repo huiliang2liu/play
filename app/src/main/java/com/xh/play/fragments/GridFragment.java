@@ -99,7 +99,7 @@ public class GridFragment extends BaseFragment {
                         if (loadMore) {
                             smartRefreshLayout.finishLoadMore();
                         } else {
-                            if (listMove.detials.size() <= 0)
+                            if (listMove.detials == null || listMove.detials.size() <= 0)
                                 textView.setVisibility(View.VISIBLE);
                             smartRefreshLayout.finishRefresh();
                             adapter.clean();

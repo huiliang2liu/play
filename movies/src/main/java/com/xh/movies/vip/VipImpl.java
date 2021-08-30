@@ -16,20 +16,16 @@ import java.util.List;
 
 public class VipImpl implements IVip {
     private static final String TAG = "VipImpl";
-    private List<IVip> vips = new ArrayList<>();
+    private List<IVip> vips;
 
-    public VipImpl(Context context) {
-        vips.add(new Vip660e(context));
-        vips.add(new Vip17kyun(context));
-        vips.add(new VipJx(context));
-        vips.add(new Vip8089g(context));
-        vips.add(new VipPanGuJieXi(context));
-        vips.add(new VipJieXi(context));
-        vips.add(new VipH8jx(context));
-        vips.add(new Vip618g(context));
-        vips.add(new VipOkjx(context));
+    public VipImpl(List<IVip> vips) {
+        this.vips = vips;
     }
 
+    @Override
+    public String name() {
+        return "VipImpl";
+    }
 
     @Override
     public void parse(String url, VipParsListener listener) {

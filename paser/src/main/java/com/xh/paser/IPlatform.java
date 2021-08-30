@@ -20,4 +20,6 @@ public interface IPlatform extends Serializable {
 
     List<Detial> search(String text);
 
+    boolean hasVip();
+
 }
