@@ -51,6 +51,13 @@ public abstract class AbsVip implements IVip {
                 }
                 super.onLoadResource(view, url);
             }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                Log.e(TAG,"加载失败:"+errorCode+",失败地址:"+failingUrl+",description:"+description);
+                listener("");
+                super.onReceivedError(view, errorCode, description, failingUrl);
+            }
         });
     }
 

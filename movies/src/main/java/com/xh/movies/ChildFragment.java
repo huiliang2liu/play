@@ -1,5 +1,6 @@
 package com.xh.movies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -132,8 +133,18 @@ public class ChildFragment extends Fragment {
                         @Override
                         public void run() {
                             super.run();
-                            if (platform.playDetail(detial))
-                                Log.e(TAG, platform.play(detial.playUrls.get(0)));
+                            if (platform.playDetail(detial)){
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent(getContext(),UrlActivity.class);
+                                        intent.putExtra(UrlActivity.ACTIVITY_URL,detial.playUrls.get(0).href);
+                                        startActivity(intent);
+//                                        Log.e(TAG, platform.play());
+                                    }
+                                });
+                            }
+
                         }
                     }.start();
                 }

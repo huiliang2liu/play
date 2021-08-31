@@ -21,8 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.xh.movies.platforms.IQiYi;
+import com.xh.movies.platforms.MGTV;
 import com.xh.movies.platforms.PPTV;
 import com.xh.movies.platforms.Platform1905;
+import com.xh.movies.platforms.TenCent;
 import com.xh.paser.IPlatform;
 import com.xh.paser.Title;
 
@@ -62,7 +64,7 @@ public class TestActivity extends FragmentActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        platform = new Platform1905();
+        platform = new MGTV();
         new Thread() {
             @Override
             public void run() {
