@@ -167,37 +167,52 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                 }
 //                taps.get(0).select = true;
                 parserAdapter.addItem(taps);
+                parserAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position, long id) {
+                        for (int i = 0; i < parserAdapter.getCount(); i++) {
+                            if (parserAdapter.getItem(i).select) {
+                                parserAdapter.getItem(i).select = false;
+                            }
+                        }
+                        parserAdapter.getItem(position).select = true;
+                        parserAdapter.notifyDataSetChanged();
+                        for (IVip vip : application.vips) {
+                            if (vip.name().equals(parserAdapter.getItem(position).title)) {
+                                vip.parse(((MyTap) tabAdapter.getItem(index)).url.href, new VipParsListener() {
+                                    @Override
+                                    public void onListener(String url) {
+                                        PoolManager.runUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast toast = new Toast(getApplication());
+                                                TextView textView = new TextView(getApplication());
+                                                textView.setBackgroundColor(Color.WHITE);
+                                                toast.setView(textView);
+                                                toast.setDuration(Toast.LENGTH_SHORT);
+                                                textView.setPadding(20,10,20,10);
+                                                textView.setTextSize(15);
+                                                if (url == null || url.isEmpty()){
+                                                    textView.setText("解析失败");
+                                                    textView.setTextColor(Color.RED);
+                                                    toast.show();
+                                                    return;
+                                                }
+                                                textView.setText("解析成功");
+                                                textView.setTextColor(Color.BLACK);
+                                                toast.show();
+                                                videoView.play(url);
+                                            }
+                                        });
+                                    }
+                                });
+                                break;
+                            }
+                        }
+                    }
+                });
             }
-            parserAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position, long id) {
-                    for (int i = 0; i < parserAdapter.getCount(); i++) {
-                        if (parserAdapter.getItem(i).select) {
-                            parserAdapter.getItem(i).select = false;
-                        }
-                    }
-                    parserAdapter.getItem(position).select = true;
-                    parserAdapter.notifyDataSetChanged();
-                    for (IVip vip : application.vips) {
-                        if (vip.name().equals(parserAdapter.getItem(position).title)) {
-                            vip.parse(((MyTap) tabAdapter.getItem(index)).url.href, new VipParsListener() {
-                                @Override
-                                public void onListener(String url) {
-                                    PoolManager.runUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (url == null || url.isEmpty())
-                                                return;
-                                            videoView.play(url);
-                                        }
-                                    });
-                                }
-                            });
-                            break;
-                        }
-                    }
-                }
-            });
+
             tabAdapter = new TabAdapter(recyclerView);
             tabAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
                 @Override
@@ -321,6 +336,13 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                         myTap.select = i == index;
                         taps.add(myTap);
                     }
+                    PoolManager.runUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tabAdapter.addItem(taps);
+                            hide();
+                        }
+                    });
                     final String url = platform.play(detial.playUrls.get(0));
                     if (url == null || url.isEmpty()) {
                         Log.e(TAG, "play error");
@@ -331,8 +353,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                         @Override
                         public void run() {
                             videoView.play(url);
-                            tabAdapter.addItem(taps);
-                            hide();
                         }
                     });
                 } else

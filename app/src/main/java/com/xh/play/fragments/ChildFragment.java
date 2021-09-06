@@ -112,6 +112,8 @@ public class ChildFragment extends BaseFragment {
                 PoolManager.runUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (!isAdded())
+                            return;
                         textView.addItem(datas);
                         adapter = new FragmentAdapter(ChildFragment.this, fragments);
                         viewPager.setAdapter(adapter);

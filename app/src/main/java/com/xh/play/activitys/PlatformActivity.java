@@ -50,6 +50,8 @@ public class PlatformActivity extends BaseActivity {
     @Override
     protected void bindData() {
         super.bindData();
+        if (application.platforms == null)
+            return;
         platform = application.platforms.get(getIntent().getIntExtra(PLATFORM, 0));
         tabAdapter = new TabAdapter(recyclerView);
         tabAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
