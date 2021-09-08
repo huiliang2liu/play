@@ -104,7 +104,8 @@ public class GridFragment extends BaseFragment {
             GridFragment fragment = weakReference.get();
             if (fragment == null)
                 return;
-            fragment.next = listMove.next;
+            if (listMove.detials != null && listMove.detials.size() > 0)
+                fragment.next = listMove.next;
             PoolManager.runUiThread(new Runnable() {
                 @Override
                 public void run() {
