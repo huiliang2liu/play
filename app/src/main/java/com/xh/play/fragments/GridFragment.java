@@ -19,6 +19,8 @@ import com.xh.play.adapters.ChildAdapter;
 
 import androidx.annotation.NonNull;
 
+import java.lang.ref.WeakReference;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -83,34 +85,76 @@ public class GridFragment extends BaseFragment {
             load(false);
     }
 
+    private static class Load implements Runnable {
+        WeakReference<GridFragment> weakReference;
+        IPlatform platform;
+        String url;
+        boolean loadMore;
+
+        Load(GridFragment fragment, IPlatform platform, String url, boolean loadMore) {
+            weakReference = new WeakReference<>(fragment);
+            this.platform = platform;
+            this.url = url;
+            this.loadMore = loadMore;
+        }
+
+        @Override
+        public void run() {
+            ListMove listMove = platform.list(url);
+            GridFragment fragment = weakReference.get();
+            if (fragment == null)
+                return;
+            fragment.next = listMove.next;
+            PoolManager.runUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (fragment.smartRefreshLayout == null)
+                        return;
+                    fragment.smartRefreshLayout.setEnableLoadMore(fragment.next != null && !fragment.next.isEmpty());
+                    if (loadMore) {
+                        fragment.smartRefreshLayout.finishLoadMore();
+                    } else {
+                        if (listMove.detials == null || listMove.detials.size() <= 0)
+                            fragment.textView.setVisibility(View.VISIBLE);
+                        fragment.smartRefreshLayout.finishRefresh();
+                        fragment.adapter.clean();
+                    }
+                    fragment.adapter.addItem(listMove.detials);
+                    fragment.loading = false;
+                }
+            });
+        }
+    }
+
     private void load(boolean loadMore) {
         loading = true;
-        PoolManager.io(new Runnable() {
-            @Override
-            public void run() {
-                ListMove listMove = platform.list(loadMore ? next : url);
-                next = listMove.next;
-                PoolManager.runUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (smartRefreshLayout == null)
-                            return;
-                        smartRefreshLayout.setEnableLoadMore(next != null && !next.isEmpty());
-                        if (loadMore) {
-                            smartRefreshLayout.finishLoadMore();
-                        } else {
-                            if (listMove.detials == null || listMove.detials.size() <= 0)
-                                textView.setVisibility(View.VISIBLE);
-                            smartRefreshLayout.finishRefresh();
-                            adapter.clean();
-                        }
-                        adapter.addItem(listMove.detials);
-                        loading = false;
-                    }
-                });
-
-            }
-        });
+        PoolManager.io(new Load(this, platform, loadMore ? next : url, loadMore));
+//        PoolManager.io(new Runnable() {
+//            @Override
+//            public void run() {
+//                ListMove listMove = platform.list(loadMore ? next : url);
+//                next = listMove.next;
+//                PoolManager.runUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (smartRefreshLayout == null)
+//                            return;
+//                        smartRefreshLayout.setEnableLoadMore(next != null && !next.isEmpty());
+//                        if (loadMore) {
+//                            smartRefreshLayout.finishLoadMore();
+//                        } else {
+//                            if (listMove.detials == null || listMove.detials.size() <= 0)
+//                                textView.setVisibility(View.VISIBLE);
+//                            smartRefreshLayout.finishRefresh();
+//                            adapter.clean();
+//                        }
+//                        adapter.addItem(listMove.detials);
+//                        loading = false;
+//                    }
+//                });
+//
+//            }
+//        });
     }
 
     public GridFragment setPlatform(IPlatform platform) {

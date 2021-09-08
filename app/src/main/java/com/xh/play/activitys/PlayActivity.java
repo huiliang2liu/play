@@ -25,6 +25,7 @@ import com.xh.base.adapter.RecyclerViewAdapter;
 import com.xh.base.animation.AnimatorFactory;
 import com.xh.base.animation.ViewEmbellish;
 import com.xh.base.thread.PoolManager;
+import com.xh.base.thread.Runnable;
 import com.xh.base.widget.RecyclerView;
 import com.xh.media.MediaListener;
 import com.xh.media.widget.VideoView;
@@ -37,6 +38,7 @@ import com.xh.play.R;
 import com.xh.play.adapters.TabAdapter;
 import com.xh.play.entities.Tap;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -190,9 +192,9 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                                                 textView.setBackgroundColor(Color.WHITE);
                                                 toast.setView(textView);
                                                 toast.setDuration(Toast.LENGTH_SHORT);
-                                                textView.setPadding(20,10,20,10);
+                                                textView.setPadding(20, 10, 20, 10);
                                                 textView.setTextSize(15);
-                                                if (url == null || url.isEmpty()){
+                                                if (url == null || url.isEmpty()) {
                                                     textView.setText("解析失败");
                                                     textView.setTextColor(Color.RED);
                                                     toast.show();
@@ -296,70 +298,175 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         });
     }
 
-    private void getUrl() {
-        PoolManager.io(new Runnable() {
-            @Override
-            public void run() {
-                final String url = platform.play(((MyTap) tabAdapter.getItem(index)).url);
-                if (url == null || url.isEmpty()) {
-                    Log.e(TAG, "play error");
-                    Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
-                    tv.setVisibility(View.VISIBLE);
-                    return;
+    private static class GetUrl implements java.lang.Runnable {
+        WeakReference<PlayActivity> weakReference;
+        Detial.DetailPlayUrl url;
+        private IPlatform platform;
+
+        GetUrl(PlayActivity activity, Detial.DetailPlayUrl url, IPlatform platform) {
+            weakReference = new WeakReference<>(activity);
+            this.url = url;
+            this.platform = platform;
+        }
+
+        @Override
+        public void run() {
+            final String path = platform.play(url);
+            PlayActivity activity = weakReference.get();
+            if (activity == null)
+                return;
+            if (path == null || path.isEmpty()) {
+                Log.e(TAG, "play error");
+                Toast.makeText(activity, "播放地址错误", Toast.LENGTH_SHORT).show();
+                activity.tv.setVisibility(View.VISIBLE);
+                return;
+            }
+            PoolManager.runUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    activity.videoView.play(path);
                 }
+            });
+        }
+    }
+
+
+    private void getUrl() {
+        Detial.DetailPlayUrl detailPlayUrl = ((MyTap) tabAdapter.getItem(index)).url;
+        PoolManager.runUiThread(new GetUrl(this, detailPlayUrl, platform));
+//        PoolManager.io(new Runnable() {
+//            @Override
+//            public void run() {
+//                final String url = platform.play(((MyTap) tabAdapter.getItem(index)).url);
+//                if (url == null || url.isEmpty()) {
+//                    Log.e(TAG, "play error");
+//                    Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
+//                    tv.setVisibility(View.VISIBLE);
+//                    return;
+//                }
+//                PoolManager.runUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        videoView.play(url);
+//                    }
+//                });
+//            }
+//        });
+    }
+
+    private static class GetPlayList implements java.lang.Runnable {
+        WeakReference<PlayActivity> weakReference;
+        IPlatform platform;
+        Detial detial;
+
+        GetPlayList(PlayActivity activity, IPlatform platform, Detial detial) {
+            weakReference = new WeakReference<>(activity);
+            this.platform = platform;
+            this.detial = detial;
+        }
+
+        @Override
+        public void run() {
+            boolean success = platform.playDetail(detial);
+            PlayActivity activity = weakReference.get();
+            if (activity == null)
+                return;
+            if (!success) {
                 PoolManager.runUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        videoView.play(url);
+                        Toast.makeText(activity.getApplication(), "解析播放地址失败", Toast.LENGTH_SHORT).show();
                     }
                 });
+                return;
             }
-        });
+            if (detial.playUrls == null || detial.playUrls.size() <= 0) {
+                PoolManager.runUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(activity.getApplication(), "没有播放地址", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                activity.tv.setVisibility(View.VISIBLE);
+                return;
+            }
+            PoolManager.runUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    activity.showPlayList();
+                }
+            });
+            activity.getUrl();
+        }
+    }
+
+    private void showPlayList() {
+        final List<Tap> taps = new ArrayList<>();
+        for (int i = 0; i < detial.playUrls.size(); i++) {
+            MyTap myTap = new MyTap();
+            myTap.url = detial.playUrls.get(i);
+            myTap.title = myTap.url.title;
+            myTap.select = i == index;
+            taps.add(myTap);
+        }
+        tabAdapter.addItem(taps);
+        hide();
     }
 
     private void getPlayList() {
-        PoolManager.io(new Runnable() {
-            @Override
-            public void run() {
-                if (platform.playDetail(detial)) {
-                    if (detial.playUrls.size() < 0) {
-                        Log.e(TAG, "no url");
-                        Toast.makeText(getApplication(), "没有播放地址", Toast.LENGTH_SHORT).show();
-                        tv.setVisibility(View.VISIBLE);
-                        return;
-                    }
-                    final List<Tap> taps = new ArrayList<>();
-                    for (int i = 0; i < detial.playUrls.size(); i++) {
-                        MyTap myTap = new MyTap();
-                        myTap.url = detial.playUrls.get(i);
-                        myTap.title = myTap.url.title;
-                        myTap.select = i == index;
-                        taps.add(myTap);
-                    }
-                    PoolManager.runUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tabAdapter.addItem(taps);
-                            hide();
-                        }
-                    });
-                    final String url = platform.play(detial.playUrls.get(0));
-                    if (url == null || url.isEmpty()) {
-                        Log.e(TAG, "play error");
-                        Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    PoolManager.runUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            videoView.play(url);
-                        }
-                    });
-                } else
-                    Toast.makeText(getApplication(), "解析播放地址失败", Toast.LENGTH_SHORT).show();
-                ;
-            }
-        });
+        PoolManager.io(new GetPlayList(this, platform, detial));
+//        PoolManager.io(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (platform.playDetail(detial)) {
+//                    if (detial.playUrls.size() < 0) {
+//                        Log.e(TAG, "no url");
+//                        PoolManager.runUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Toast.makeText(getApplication(), "没有播放地址", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                        tv.setVisibility(View.VISIBLE);
+//                        return;
+//                    }
+//                    final List<Tap> taps = new ArrayList<>();
+//                    for (int i = 0; i < detial.playUrls.size(); i++) {
+//                        MyTap myTap = new MyTap();
+//                        myTap.url = detial.playUrls.get(i);
+//                        myTap.title = myTap.url.title;
+//                        myTap.select = i == index;
+//                        taps.add(myTap);
+//                    }
+//                    PoolManager.runUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            tabAdapter.addItem(taps);
+//                            hide();
+//                        }
+//                    });
+//                    getUrl();
+//                    final String url = platform.play(detial.playUrls.get(0));
+//                    if (url == null || url.isEmpty()) {
+//                        Log.e(TAG, "play error");
+//                        Toast.makeText(getApplication(), "播放地址错误", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                    PoolManager.runUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            videoView.play(url);
+//                        }
+//                    });
+//                } else
+//                    PoolManager.runUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(getApplication(), "解析播放地址失败", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//            }
+//        });
     }
 
 

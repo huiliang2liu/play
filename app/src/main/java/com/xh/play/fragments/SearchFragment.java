@@ -15,6 +15,7 @@ import com.xh.play.activitys.PlayActivity;
 import com.xh.play.adapters.ChildAdapter;
 
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
@@ -35,35 +36,65 @@ public class SearchFragment extends BaseFragment {
         return this;
     }
 
+    private static class Search implements Runnable {
+        String text;
+        IPlatform platform;
+        WeakReference<ChildAdapter> weakReference;
+
+        Search(ChildAdapter adapter, IPlatform platform, String text) {
+            weakReference = new WeakReference<>(adapter);
+            this.platform = platform;
+            this.text = text;
+        }
+
+        @Override
+        public void run() {
+            List<Detial> detials = platform.search(text);
+            if (detials == null || detials.size() <= 0)
+                return;
+            ChildAdapter adapter = weakReference.get();
+            if (adapter == null)
+                return;
+            PoolManager.runUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.clean();
+                    adapter.addItem(detials);
+                }
+            });
+        }
+    }
+
     @Override
     public void bindView() {
         super.bindView();
         ButterKnife.bind(this, view);
-        adapter =new ChildAdapter(recyclerView);
+        adapter = new ChildAdapter(recyclerView);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PoolManager.io(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<Detial> detials = platform.search(editText.getText().toString());
-                        PoolManager.runUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.clean();
-                                adapter.addItem(detials);
-                            }
-                        });
-                    }
-                });
+                PoolManager.io(new Search(adapter, platform, editText.getText().toString()));
+//                PoolManager.io(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        List<Detial> detials = platform.search(editText.getText().toString());
+//                        PoolManager.runUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                adapter.clean();
+//                                adapter.addItem(detials);
+//                            }
+//                        });
+//                    }
+//                });
             }
         });
         adapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, long id) {
-                Intent intent =new Intent(getContext(), PlayActivity.class);
-                intent.putExtra(PlayActivity.PLATFORMS,application.platforms.indexOf(platform));
-                intent.putExtra(PlayActivity.DETAIL,adapter.getItem(position));
+                Intent intent = new Intent(getContext(), PlayActivity.class);
+                intent.putExtra(PlayActivity.PLATFORMS, application.platforms.indexOf(platform));
+                intent.putExtra(PlayActivity.DETAIL, adapter.getItem(position));
                 startActivity(intent);
             }
         });

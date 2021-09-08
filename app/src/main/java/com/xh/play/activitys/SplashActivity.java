@@ -232,6 +232,7 @@ public class SplashActivity extends BaseActivity {
         }
         adapter = new FragmentAdapter(this, fragments);
         viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(0,false);
     }
 
     private void getIP() {
