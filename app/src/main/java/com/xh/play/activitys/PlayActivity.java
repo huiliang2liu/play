@@ -181,33 +181,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                         parserAdapter.notifyDataSetChanged();
                         for (IVip vip : application.vips) {
                             if (vip.name().equals(parserAdapter.getItem(position).title)) {
-                                vip.parse(((MyTap) tabAdapter.getItem(index)).url.href, new VipParsListener() {
-                                    @Override
-                                    public void onListener(String url) {
-                                        PoolManager.runUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast toast = new Toast(getApplication());
-                                                TextView textView = new TextView(getApplication());
-                                                textView.setBackgroundColor(Color.WHITE);
-                                                toast.setView(textView);
-                                                toast.setDuration(Toast.LENGTH_SHORT);
-                                                textView.setPadding(20, 10, 20, 10);
-                                                textView.setTextSize(15);
-                                                if (url == null || url.isEmpty()) {
-                                                    textView.setText("解析失败");
-                                                    textView.setTextColor(Color.RED);
-                                                    toast.show();
-                                                    return;
-                                                }
-                                                textView.setText("解析成功");
-                                                textView.setTextColor(Color.BLACK);
-                                                toast.show();
-                                                videoView.play(url);
-                                            }
-                                        });
-                                    }
-                                });
+                                vip.parse(((MyTap) tabAdapter.getItem(index)).url.href, new Listener(PlayActivity.this));
                                 break;
                             }
                         }
@@ -296,6 +270,43 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                 videoView.seekTo(seek);
             }
         });
+    }
+
+    private static class Listener implements VipParsListener {
+        WeakReference<PlayActivity> weakReference;
+
+        Listener(PlayActivity activity) {
+            weakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void onListener(String url) {
+            PlayActivity activity = weakReference.get();
+            if (activity == null)
+                return;
+            PoolManager.runUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast toast = new Toast(activity.getApplication());
+                    TextView textView = new TextView(activity.getApplication());
+                    textView.setBackgroundColor(Color.WHITE);
+                    toast.setView(textView);
+                    toast.setDuration(Toast.LENGTH_SHORT);
+                    textView.setPadding(20, 10, 20, 10);
+                    textView.setTextSize(15);
+                    if (url == null || url.isEmpty()) {
+                        textView.setText("解析失败");
+                        textView.setTextColor(Color.RED);
+                        toast.show();
+                        return;
+                    }
+                    textView.setText("解析成功");
+                    textView.setTextColor(Color.BLACK);
+                    toast.show();
+                    activity.videoView.play(url);
+                }
+            });
+        }
     }
 
     private static class GetUrl implements java.lang.Runnable {
