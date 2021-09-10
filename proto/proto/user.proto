@@ -1,0 +1,12 @@
+syntax = "proto3";
+package proto_user;
+option java_package = "com.xh.play.entities";
+option java_outer_classname = "Users";
+import "message.proto";
+
+message User {
+    string name = 1;
+    int32 sex = 2;
+    int32 age = 3;
+    proto_app.Update update = 4;
+}

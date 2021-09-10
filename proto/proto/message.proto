@@ -1,0 +1,16 @@
+syntax = "proto3";
+package  proto_app;
+option java_package = "com.xh.play.entities";
+option java_outer_classname = "Entities";
+
+message Update {
+    string url = 1;
+    bool must = 2;
+    string appVer = 3;
+    string describe = 4;
+}
+
+message Splash{
+    repeated string images = 1;
+}
+
