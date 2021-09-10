@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -23,6 +24,7 @@ import com.xh.play.BuildConfig;
 import com.xh.play.HttpManager;
 import com.xh.play.PlayApplication;
 import com.xh.play.R;
+import com.xh.play.entities.Entities;
 import com.xh.play.entities.IP;
 import com.xh.play.entities.Movies;
 import com.xh.play.entities.Splash;
@@ -232,7 +234,7 @@ public class SplashActivity extends BaseActivity {
         }
         adapter = new FragmentAdapter(this, fragments);
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(0,false);
+        viewPager.setCurrentItem(0, false);
     }
 
     private void getIP() {

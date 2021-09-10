@@ -328,8 +328,13 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                 return;
             if (path == null || path.isEmpty()) {
                 Log.e(TAG, "play error");
-                Toast.makeText(activity, "播放地址错误", Toast.LENGTH_SHORT).show();
-                activity.tv.setVisibility(View.VISIBLE);
+                PoolManager.runUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(activity, "播放地址错误", Toast.LENGTH_SHORT).show();
+                        activity.tv.setVisibility(View.VISIBLE);
+                    }
+                });
                 return;
             }
             PoolManager.runUiThread(new Runnable() {
@@ -344,7 +349,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
 
     private void getUrl() {
         Detial.DetailPlayUrl detailPlayUrl = ((MyTap) tabAdapter.getItem(index)).url;
-        PoolManager.runUiThread(new GetUrl(this, detailPlayUrl, platform));
+        PoolManager.io(new GetUrl(this, detailPlayUrl, platform));
 //        PoolManager.io(new Runnable() {
 //            @Override
 //            public void run() {
