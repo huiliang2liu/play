@@ -64,20 +64,9 @@ public class GlideImpl extends AImageLoad {
     }
 
     private void load(int defaultImg, int error, String path, ITransform transform, ViewTarget target) {
-        RequestOptions options = new RequestOptions().error(error).placeholder(defaultImg).transform(new BitmapTransformation() {
-            @NonNull
-
-            @Override
-            protected Bitmap transform(
-                    @NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
-                return transform!=null?transform.transform(toTransform):toTransform;
-            }
-
-            @Override
-            public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
-                messageDigest.update(String.valueOf(hashCode()).getBytes());
-            }
-        });
+        RequestOptions options = new RequestOptions().error(error).placeholder(defaultImg);
+        if (transform != null)
+            options.transform(new GlideBitmapTransformation(transform));
         Glide.with(context).load(path).apply(options).into(target);
     }
 }
