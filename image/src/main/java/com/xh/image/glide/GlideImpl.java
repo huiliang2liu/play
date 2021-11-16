@@ -60,7 +60,7 @@ public class GlideImpl extends AImageLoad {
     public void loadBg(int defaultImg, int error, String path, View view, ITransform transform) {
         if (view == null)
             return;
-        load(defaultImg, error, path, transform, new DrawableViewTarget(view));
+        load(defaultImg, error, path, transform, new BitmapViewTarget(view));
     }
 
     private void load(int defaultImg, int error, String path, ITransform transform, ViewTarget target) {
